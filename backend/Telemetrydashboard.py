@@ -1,4 +1,4 @@
-import backend.fastf1 as fastf1
+import backend.fastf1data as fastf1
 import fastf1.plotting
 import matplotlib.pyplot as plt
 import matplotlib as mpl
