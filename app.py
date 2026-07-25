@@ -1,25 +1,46 @@
-import streamlit as st
-from backend.Telemetrydashboard  import create_tele_dashboard
-from backend.fastf1data import get_drivers, get_races
-st.set_page_config(page_title="Early Apex Analytics", layout="wide")
-#The titles
-st.write("Welcome to Early Apex Analytics!")
-st.title("*Telemetry Dashboard*")
-year = st.selectbox("Year",list(range(2018,2026)))
-#selecting the races
-events= get_races(year)
-events= st.selectbox("Race",events)
-session = st.selectbox("Session", ["FP1", "FP2", "FP3", "SQ", "S", "Q", "R"])
-#Selecting the drivers
-drivers_inseason = get_drivers(year, events, session)
-drivers = st.multiselect("Drivers", drivers_inseason)
-# Now generating the buttons
-if st.button("Generate Telemetry Dashboard"):
-    if len(drivers) < 2:
-        st.warning("Please select at least 2 drivers")
-    else:
-        with st.spinner("Loading FastF1 data for the early apex..."):
-            fig = create_tele_dashboard(year,events,session,drivers)
-        st.success("Apex hit!")
-        st.plotly_chart(fig, use_container_width=True)
+import fastf1
 
+
+def get_races(year):
+    """
+    Return all race names for a given F1 season.
+    """
+    schedule = fastf1.get_event_schedule(year)
+
+    races = schedule[
+        schedule["EventFormat"] != "testing"
+    ]["EventName"].tolist()
+
+    return races
+
+
+def get_drivers(year, event, session_name):
+    """
+    Return driver abbreviations for a session.
+    Example:
+    ['VER', 'HAM', 'NOR']
+    """
+
+    session = fastf1.get_session(
+        year,
+        event,
+        session_name
+    )
+
+    session.load(
+        laps=False,
+        telemetry=False,
+        weather=False,
+        messages=False
+    )
+
+    drivers = []
+
+    for driver_number in session.drivers:
+        driver = session.get_driver(driver_number)
+
+        drivers.append(
+            driver["Abbreviation"]
+        )
+
+    return sorted(drivers)
