@@ -1,7 +1,7 @@
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
 from matplotlib import pyplot as plt
-import fastf1
-from fastf1 import plotting
+import backend.fastf1 as fastf1
+from backend.fastf1 import plotting
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 year = int(input("Enter the year (eg 2022): "))

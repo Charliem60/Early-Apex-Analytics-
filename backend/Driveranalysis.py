@@ -1,12 +1,12 @@
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
 from matplotlib import pyplot as plt
-import fastf1
-from fastf1 import plotting
+import backend.fastf1data as fastf1data
+from backend.fastf1data import plotting
 import seaborn as sns
 import fastf1.plotting
 
 # Enables patches for plotting time values and loads dark colour theme.
-fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+fastf1data.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 
 # Converting lap times for later
 def format_laptime(td):
@@ -20,7 +20,7 @@ def format_laptime(td):
 year = int(input( "Enter the year (For example, 2021): "))
 event = input("Enter the race name in full (eg 'Monaco Grand Prix'): ")
 session_type = "R"
-race = fastf1.get_session(year, event, session_type)
+race = fastf1data.get_session(year, event, session_type)
 race.load()
 
 # Select the drivers you want to plot.
@@ -94,7 +94,7 @@ driver_palette = {}
 
 for driver in driver_list:
     try: 
-        driver_palette[driver] = fastf1.plotting.get_driver_color(driver, session=race)
+        driver_palette[driver] = fastf1data.plotting.get_driver_color(driver, session=race)
     except Exception:
         pass
 
@@ -136,7 +136,7 @@ distribution_laps =distribution_laps.dropna(subset=["LapTime"])
 # Seaborn doesn't have proper delta support so it has to be converted to seconds.
 distribution_laps["LapTimeSeconds"]= distribution_laps["LapTime"].dt.total_seconds()
 
-compound_palette = (fastf1.plotting.get_compound_mapping(session=race))
+compound_palette = (fastf1data.plotting.get_compound_mapping(session=race))
 
 
 # Now we have to set up the distribution plot.

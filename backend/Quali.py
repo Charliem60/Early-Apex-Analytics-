@@ -1,8 +1,8 @@
 #Quali Analysis
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
 from matplotlib import pyplot as plt
-import fastf1
-from fastf1 import plotting
+import backend.fastf1data as fastf1data
+from backend.fastf1data import plotting
 from matplotlib.ticker import FuncFormatter, MultipleLocator 
 from matplotlib.ticker import PercentFormatter  
 import pandas as pd
@@ -10,12 +10,12 @@ from timple.timedelta import strftimedelta
 from fastf1.core import Laps
 
 # Enables patches for plotting time values and loads dark colour theme.
-fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+fastf1data.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 # Loading the session data and inmputing the race you want to investigate
 year = int(input("Enter the year (eg 2022): "))
 event = input("Enter the race name in full (eg 'Austrian Grand Prix'): ")
 session_type = "Q"
-quali = fastf1.get_session(year, event, session_type)
+quali = fastf1data.get_session(year, event, session_type)
 quali.load()
 # Now we get an array of the drivers.
 drivers = pd.unique(quali.laps["Driver"])
@@ -34,7 +34,7 @@ fastest_laps["GapPercent"]= ((fastest_laps["LapTime"].dt.total_seconds() - pole_
 # Getting the right team colors and names
 team_colors = list()
 for index, lap in fastest_laps.iterlaps():
-    color = fastf1.plotting.get_team_color(lap["Team"], session=quali)
+    color = fastf1data.plotting.get_team_color(lap["Team"], session=quali)
     team_colors.append(color)
 # Plotting the data
 fig, ax = plt.subplots()
@@ -107,7 +107,7 @@ for ax, session in zip(axes, sessions):
         data["GapSeconds"] / fastest_time
     ) * 100
     # Finding the team colors
-    colors = [ fastf1.plotting.get_team_color( team, session=quali)for team in data["TeamName"]]
+    colors = [ fastf1data.plotting.get_team_color( team, session=quali)for team in data["TeamName"]]
     # Labelling the bars
     bars = ax.barh(data["Abbreviation"],data["GapPercent"],color=colors,edgecolor="black")
     # Hatch second driver
@@ -176,7 +176,7 @@ for ax, (col, title) in zip(axes, sector_names):
     data["GapPercent"] = ((data[col] - fastest_sector) / fastest_sector) *100
     
      # Finding the team colors
-    colors = [ fastf1.plotting.get_team_color( team, session=quali)for team in data["Team"]]
+    colors = [ fastf1data.plotting.get_team_color( team, session=quali)for team in data["Team"]]
     # Labelling the bars
     bars = ax.barh(data["Driver"],data["GapPercent"],color=colors,edgecolor="black")
     # Hatch second driver
@@ -245,8 +245,8 @@ ideal_df["TimeLeft"] = (ideal_df["ActualSec"] - ideal_df["IdealSec"])
 actual_order = ideal_df.sort_values("ActualGap").reset_index(drop=True)
 ideal_order = ideal_df.sort_values("IdealGap").reset_index(drop=True)
 # Colors
-actual_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in actual_order["Team"]]
-ideal_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in ideal_order["Team"]]
+actual_colors = [fastf1data.plotting.get_team_color(team, session=quali) for team in actual_order["Team"]]
+ideal_colors = [fastf1data.plotting.get_team_color(team, session=quali) for team in ideal_order["Team"]]
 # Time to plot the graph hahah!
 fig3,(ax1, ax2) = plt.subplots(1, 2, figsize=(18,10))
 # Actual order plot

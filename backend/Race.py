@@ -1,17 +1,17 @@
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
 from matplotlib import pyplot as plt
-import fastf1
-from fastf1 import plotting
+import backend.fastf1data as fastf1data
+from backend.fastf1data import plotting
 import seaborn as sns
 from matplotlib.ticker import MultipleLocator
 
 # Enables patches for plotting time values and loads dark colour theme.
-fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+fastf1data.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 # Loading the session data and inmputing the race you want to investigate
 year = int(input("Enter the year (eg 2022): "))
 event = input("Enter the race name in full (eg 'Austrian Grand Prix'): ")
 session_type = "R"
-race = fastf1.get_session(year, event, session_type)
+race = fastf1data.get_session(year, event, session_type)
 race.load()
 strategy_laps = race.laps
 laps = race.laps.pick_quicklaps()
@@ -26,7 +26,7 @@ for driver in race.drivers:
         continue
 
     abb = driver_laps["Driver"].iloc[0]
-    style = fastf1.plotting.get_driver_style(identifier = abb,
+    style = fastf1data.plotting.get_driver_style(identifier = abb,
                                              style=["color", "linestyle"],
                                              session = race)
     ax.plot(driver_laps["LapNumber"], driver_laps["Position"], label = abb, **style)
@@ -63,7 +63,7 @@ for driver in drivers:
 
     for _, row in driver_stints.iterrows():
 
-        compound_color = fastf1.plotting.get_compound_color(
+        compound_color = fastf1data.plotting.get_compound_color(
             row["Compound"],
             session=race
         )
@@ -103,27 +103,27 @@ from matplotlib.patches import Patch
 
 legend_elements = [
     Patch(
-        facecolor=fastf1.plotting.get_compound_color("SOFT", session=race),
+        facecolor=fastf1data.plotting.get_compound_color("SOFT", session=race),
         edgecolor="black",
         label="Soft"
     ),
     Patch(
-        facecolor=fastf1.plotting.get_compound_color("MEDIUM", session=race),
+        facecolor=fastf1data.plotting.get_compound_color("MEDIUM", session=race),
         edgecolor="black",
         label="Medium"
     ),
     Patch(
-        facecolor=fastf1.plotting.get_compound_color("HARD", session=race),
+        facecolor=fastf1data.plotting.get_compound_color("HARD", session=race),
         edgecolor="black",
         label="Hard"
     ),
     Patch(
-        facecolor=fastf1.plotting.get_compound_color("INTERMEDIATE", session=race),
+        facecolor=fastf1data.plotting.get_compound_color("INTERMEDIATE", session=race),
         edgecolor="black",
         label="Intermediate"
     ),
     Patch(
-        facecolor=fastf1.plotting.get_compound_color("WET", session=race),
+        facecolor=fastf1data.plotting.get_compound_color("WET", session=race),
         edgecolor="black",
         label="Wet"
     ),
@@ -159,7 +159,7 @@ race_laps["LapTime"] = race_laps["LapTime"].dt.total_seconds()
 team_order = (race_laps.groupby("Team")["LapTime"]
               .median().sort_values().index)
 # Making color pallet
-teams_colors = {team: fastf1.plotting.get_team_color(team, session=race) for team in team_order}
+teams_colors = {team: fastf1data.plotting.get_team_color(team, session=race) for team in team_order}
 
 # Now for the graph
 fig2, ax2 = plt.subplots(figsize=(12, 8))
@@ -200,7 +200,7 @@ for driver in race.drivers:
     drive["Gap"] = (drive["RefTime"] - drive["Time"]).dt.total_seconds()
     abb = drive["Driver"].iloc[0]
 
-    style = fastf1.plotting.get_driver_style(abb,session=race, style=["color", "linestyle"])
+    style = fastf1data.plotting.get_driver_style(abb,session=race, style=["color", "linestyle"])
     ax3.plot(drive["LapNumber"], drive["Gap"], linewidth=2, label=abb, **style)
 
 ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "red")

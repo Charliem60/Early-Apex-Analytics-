@@ -1,4 +1,4 @@
-import fastf1
+import backend.fastf1data as fastf1data
 import fastf1.plotting
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,13 +8,13 @@ import matplotlib as mpl
 from matplotlib.lines import Line2D
 import random
 # Enables patches for plotting time values and loads dark colour theme.
-fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+fastf1data.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 year = int(input("Enter the year (eg 2022): "))
 event = input("Enter the race name in full (eg 'Austrian Grand Prix'): ")
 session_type = input("Enter the session (FP1, FP2, FP3, SQ, S, Q, R): ").upper()
 session_names = {"FP1": "Free Practice 1", "FP2": "Free Practice 2", "FP3": "Free Practice 3", "SQ": "Sprint Qualifying", "S": "Sprint Race", "Q" : "Qualifying", "R": "Race"}
 drivers= input("Enter a driver to investigate here in the form (HAM, BOT, VER): ").split(",")
-race = fastf1.get_session(year, event, session_type)
+race = fastf1data.get_session(year, event, session_type)
 race.load()
 # Fastest Lap
 driver_tel = {}
@@ -49,7 +49,7 @@ segments=np.concatenate([points[:-1], points[1:]], axis=1)
 driver_colors = {}
 see_colors = {}
 for driver in drivers:
-    color = fastf1.plotting.get_driver_color(driver, session=race)
+    color = fastf1data.plotting.get_driver_color(driver, session=race)
     if color in see_colors:
         driver_colors[driver] = "#{:06x}".format(random.randint(0,0xFFFFFF))
     else:

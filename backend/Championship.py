@@ -1,5 +1,5 @@
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
-import fastf1
+import backend.fastf1 as fastf1
 import fastf1.plotting
 from fastf1.ergast import Ergast
 from matplotlib import pyplot as plt

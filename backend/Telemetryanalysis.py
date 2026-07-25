@@ -1,4 +1,4 @@
-import fastf1
+import backend.fastf1data as fastf1data
 import fastf1.plotting
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,12 +7,12 @@ from matplotlib.collections import LineCollection
 import matplotlib as mpl
 
 # Enables patches for plotting time values and loads dark colour theme.
-fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+fastf1data.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 year = int(input("Enter the year (eg 2022): "))
 event = input("Enter the race name in full (eg 'Austrian Grand Prix'): ")
 session_type = "Q"
 drivers = input("Enter a driver to investigate here in the form (HAM, BOT, VER): ").upper().replace("","").split(",")
-race = fastf1.get_session(year, event, session_type)
+race = fastf1data.get_session(year, event, session_type)
 race.load()
 fig, axes = plt.subplots(2, 2, figsize=(14,14))
 axes = axes.flatten()
