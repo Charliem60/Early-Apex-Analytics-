@@ -10,40 +10,37 @@ import numpy as np
 # Enables patches for plotting time values and loads dark colour theme.
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
-year = int(input("Enter the year (eg 2022): "))
-event = input("Enter the race name in full (eg 'Austrian Grand Prix'): ")
-session_type = input("Enter the session (FP1, FP2, FP3, SQ, S, Q, R): ").upper()
-session_names = {"FP1": "Free Practice 1", "FP2": "Free Practice 2", "FP3": "Free Practice 3", "SQ": "Sprint Qualifying", "S": "Sprint Race", "Q" : "Qualifying", "R": "Race"}
-drivers = input("Enter a driver to investigate here in the form (HAM, BOT, VER): ").split(",")
-race = fastf1.get_session(year, event, session_type)
-race.load()
-circuit = race.get_circuit_info()
-corners = circuit.corners
+def create_tele_dashboard(year,event,session_type, drivers): 
+    session_names = {"FP1": "Free Practice 1", "FP2": "Free Practice 2", "FP3": "Free Practice 3", "SQ": "Sprint Qualifying", "S": "Sprint Race", "Q" : "Qualifying", "R": "Race"}
+    race = fastf1.get_session(year, event, session_type)
+    race.load()
+    circuit = race.get_circuit_info()
+    corners = circuit.corners
 # Getting a drivers fastest lap and fetching the telemetry and getting the colors
-tele = {}
-styles = {}
+    tele = {}
+    styles = {}
 #Find fastest lap in the session
-valid_laps = race.laps[race.laps["LapTime"].notna()]
-reference_delta_lap = valid_laps.pick_fastest()
-reference_delta_driver = reference_delta_lap["Driver"]
-for driver in drivers:
-    lap = race.laps.pick_drivers(driver).pick_fastest()
-    tele[driver] = lap.get_car_data().add_distance()
+    valid_laps = race.laps[race.laps["LapTime"].notna()]
+    reference_delta_lap = valid_laps.pick_fastest()
+    reference_delta_driver = reference_delta_lap["Driver"]
+    for driver in drivers:
+        lap = race.laps.pick_drivers(driver).pick_fastest()
+        tele[driver] = lap.get_car_data().add_distance()
 #Calculate delta relative
-    delta, ref_tel, compare_tel = fastf1.utils.delta_time(lap, reference_delta_lap)
-    tele[driver]["Delta"] = delta.round(3)
-    styles[driver] = fastf1.plotting.get_driver_style(identifier = driver,style=["color", "linestyle"], session = race)
+        delta, ref_tel, compare_tel = fastf1.utils.delta_time(lap, reference_delta_lap)
+        tele[driver]["Delta"] = delta.round(3)
+        styles[driver] = fastf1.plotting.get_driver_style(identifier = driver,style=["color", "linestyle"], session = race)
 
 # Plotting the data
-fig = make_subplots(rows=6, cols=1, shared_xaxes=True, vertical_spacing=0.04, subplot_titles=("Speed (km/h)",
+    fig = make_subplots(rows=6, cols=1, shared_xaxes=True, vertical_spacing=0.04, subplot_titles=("Speed (km/h)",
           "Delta",
           "Throttle",
           "Brake",
           "Gear",
           "RPM"))
 # Speed
-for driver in drivers:
-    tele2 = tele[driver]
+    for driver in drivers:
+     tele2 = tele[driver]
 #SPEEEEEDDDD   
     fig.add_trace(go.Scatter(x=tele2["Distance"], y=tele2["Speed"], name = driver,showlegend=True, line=dict(color=styles[driver]["color"], dash="dash" if driver == drivers[1] else "solid"),
                               hovertemplate= "<b>%{fullData.name}</b><br>" "Distance: %{x:.1f} m<br>" "Speed: %{y:.1f} km/h<extra></extra>"),
@@ -70,13 +67,13 @@ for driver in drivers:
                               row=2, col=1)
 
 # Setting up the plots
-for _, corner in corners.iterrows():
-    for row in range(1,7):
-        fig.add_vline(x=corner["Distance"], line_dash="dot", line_width=2, row=row,col=1,line_color="grey") 
-    fig.add_annotation(x=corner["Distance"], y=1.02, text= str(corner["Number"]), yref="paper", showarrow=False, font=dict(size=8))
-fig.update_layout(template="plotly_dark", height=1300, hovermode="x unified", title =dict(text=f"{year} {event} {session_names.get(session_type, session_type)}<br>Fastest Lap Telemetry Comparison Plot", font=dict(size=22, color="red")))
-fig.update_annotations(font=dict(size=10, color="white"))
-fig.show()
+    for _, corner in corners.iterrows():
+        for row in range(1,7):
+         fig.add_vline(x=corner["Distance"], line_dash="dot", line_width=2, row=row,col=1,line_color="grey")
+         fig.add_annotation(x=corner["Distance"], y=1.02, text= str(corner["Number"]), yref="paper", showarrow=False, font=dict(size=8))
+    fig.update_layout(template="plotly_dark", height=1300, hovermode="x unified", title =dict(text=f"{year} {event} {session_names.get(session_type, session_type)}<br>Fastest Lap Telemetry Comparison Plot", font=dict(size=22, color="red")))
+    fig.update_annotations(font=dict(size=10, color="white"))
+    return fig
 
 
 
