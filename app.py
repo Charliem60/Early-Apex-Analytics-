@@ -1,46 +1,18 @@
-import fastf1
+import streamlit as st
 
+st.set_page_config("Early Apex Analytics", layout="wide")
 
-def get_races(year):
-    """
-    Return all race names for a given F1 season.
-    """
-    schedule = fastf1.get_event_schedule(year)
+st.write("Formula 1 Data Analytics Dashboard")
+page = st.sidebar.selectbox("Choose Analysis Type",
+                            ["Race Results", "Qualifying Analysis", "Driver Analysis", "Weather", "Telemetry Dashboard"])
+if page == "Qualifying Analysis":
+    st.header("Driver Comparison and Results")
 
-    races = schedule[
-        schedule["EventFormat"] != "testing"
-    ]["EventName"].tolist()
-
-    return races
-
-
-def get_drivers(year, event, session_name):
-    """
-    Return driver abbreviations for a session.
-    Example:
-    ['VER', 'HAM', 'NOR']
-    """
-
-    session = fastf1.get_session(
-        year,
-        event,
-        session_name
-    )
-
-    session.load(
-        laps=False,
-        telemetry=False,
-        weather=False,
-        messages=False
-    )
-
-    drivers = []
-
-    for driver_number in session.drivers:
-        driver = session.get_driver(driver_number)
-
-        drivers.append(
-            driver["Abbreviation"]
-        )
-
-    return sorted(drivers)
+elif page == "Race Results":
+    st.header("Race Analysis")
+elif page == "Driver Analysis":
+    st.header("Driver Comparison")
+elif page == "Telemetry Dashboard":
+    st.header("Telemetry Dashboard")
+elif page == "Weather":
+    st.header("Weather Dashboard")
