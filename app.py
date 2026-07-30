@@ -285,91 +285,37 @@ elif page == "📊 Telemetry":
 
 elif page == "🏁 Qualifying":
 
-    st.title("🏁 Qualifying Analysis")
+    st.title("🏁 Qualifying Results")
 
     st.write(
-        "Analyse qualifying performance across Q1, Q2 and Q3."
-    )
-
-    session_type = "Q"
-
-    available_drivers = get_drivers(
-        year,
-        event,
-        session_type
-    )
-
-    drivers = st.multiselect(
-        "Drivers",
-        available_drivers,
-        key="quali_drivers"
+        f"Qualifying results for the {year} {event}"
     )
 
     if st.button(
-        "Generate Qualifying Analysis"
+        "Load Qualifying Results",
+        key="load_qualifying"
     ):
 
         from backend.Quali import (
-            create_quali_plots
+            get_qualifying_results
         )
 
         with st.spinner(
-            "Loading qualifying data..."
+            "Loading qualifying results..."
         ):
 
-            (
-                fig_results,
-                fig_quali,
-                fig_sectors,
-                fig_ideal
-            ) = create_quali_plots(
+            results = get_qualifying_results(
                 year,
-                event,
-                session_type,
-                drivers
+                event
             )
 
-        st.success(
-            "Qualifying analysis generated!"
+        st.success("Qualifying results loaded!")
+
+        st.dataframe(
+            results,
+            use_container_width=True,
+            hide_index=True
         )
-
-        st.subheader(
-            "🏆 Qualifying Results"
-        )
-
-        st.pyplot(
-            fig_results,
-            use_container_width=True
-        )
-
-        st.subheader(
-            "📊 Q1 / Q2 / Q3"
-        )
-
-        st.pyplot(
-            fig_quali,
-            use_container_width=True
-        )
-
-        st.subheader(
-            "🏎️ Sector Performance"
-        )
-
-        st.pyplot(
-            fig_sectors,
-            use_container_width=True
-        )
-
-        st.subheader(
-            "⏱️ Actual vs Ideal Lap"
-        )
-
-        st.pyplot(
-            fig_ideal,
-            use_container_width=True
-        )
-
-
 # ============================================================
 # RACE ANALYSIS
 # ============================================================

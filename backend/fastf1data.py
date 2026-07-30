@@ -15,8 +15,7 @@ def get_drivers(year, event, session_type):
         session_type
     )
 
-    # Only load the session information we need
-    # to identify the drivers.
+    # Only load session information needed to identify drivers
     session.load(
         laps=False,
         telemetry=False,
@@ -24,4 +23,13 @@ def get_drivers(year, event, session_type):
         messages=False
     )
 
-    return session.drivers
+    # Get driver abbreviations rather than driver numbers
+    if not session.results.empty and "Abbreviation" in session.results.columns:
+        return (
+            session.results["Abbreviation"]
+            .dropna()
+            .unique()
+            .tolist()
+        )
+
+    return []

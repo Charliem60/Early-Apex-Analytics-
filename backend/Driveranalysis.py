@@ -1,7 +1,7 @@
 # First we need to import the necessary libraries. We will use matplotlib for plotting and fastf1 for accessing the Formula 1 data.
 from matplotlib import pyplot as plt
 import fastf1 as fastf1
-from fastf1data import plotting
+from fastf1 import plotting
 import seaborn as sns
 import fastf1.plotting
 
