@@ -6,8 +6,6 @@ import mplcursors
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
-
-# Enables patches for plotting time values and loads dark colour theme.
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 def create_tele_dashboard(year,event,session_type, drivers): 
