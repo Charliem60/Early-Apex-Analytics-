@@ -209,4 +209,4 @@ def create_race_traces(year, event, session_type, drivers):
 
 
     fig.tight_layout()
-    return fig1, fig2, fig3
+    return fig, fig1, fig2, fig3

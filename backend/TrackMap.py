@@ -72,5 +72,5 @@ def create_track_map(year, event, session_type, drivers):
     ax.axis("off")
     ax.legend(handles=legend_elements, loc="upper left")
     plt.title(f"{year} {event} {session_type} Fastest Lap Track Domination Comparison Plot", color="red", fontsize=16, fontweight="bold")
-    fig. tight_layout()
+    plt.tight_layout()
     return fig

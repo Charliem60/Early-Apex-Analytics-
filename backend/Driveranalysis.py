@@ -17,7 +17,7 @@ def format_laptime(td):
 
 
 #Load session data and select the session you want to plot. 
-def create_driver_traces(year, event, session_type, drivers):
+def create_driver_lap_data(year, event, session_type, drivers):
     race = fastf1.get_session(year, event, session_type)
     race.load()
 
@@ -25,29 +25,27 @@ def create_driver_traces(year, event, session_type, drivers):
     available_drivers = race.results["Abbreviation"].tolist()
     valid_drivers = []
     
-    for driver in driver_list: 
+    for driver in drivers:
         if driver in available_drivers:
             valid_drivers.append(driver)
         else:
             print(f"Warning: {driver} is not found in this session!")
 
     if not valid_drivers:
-        print("No drivers selected!")
-        exit()
-        driver_list = valid_drivers
+        return None, None
 
 # Set up the colours of the graph and its titles
     fig1, ax1 = plt.subplots(figsize=(11, 7))
-    fig1.patch.set_facecolor('black')  
-    ax1.set_facecolor('black')
+    fig1.patch.set_facecolor('grey')  
+    ax1.set_facecolor('grey')
 
-    ax1.tick_params(colors='red')  
-    ax1.xaxis.label.set_color('red')
-    ax1.yaxis.label.set_color('red')
-    ax1.set_title(f"Lap times of selected drivers during the {year} {event}", color="red")
+    ax1.tick_params(colors='yellow')  
+    ax1.xaxis.label.set_color('yellow')
+    ax1.yaxis.label.set_color('yellow')
+    ax1.set_title(f"Lap times of selected drivers during the {year} {event}", color="yellow", fontweight="bold")
 
 # Picking Drivers for the plot
-    for driver in driver_list:
+    for driver in drivers:
         driver = driver.strip()
 
         laps = race.laps.pick_drivers(driver).pick_quicklaps().reset_index()
@@ -83,10 +81,10 @@ def create_driver_traces(year, event, session_type, drivers):
 
 # Now to create a scatterplot to display the given laptimes of the drivers in a scatterplot.
 # Get laps only for selected drivers.
-    driver_laps = race.laps.pick_drivers(driver_list).pick_quicklaps().reset_index()
+    driver_laps = race.laps.pick_drivers(valid_drivers).pick_quicklaps().reset_index()
     driver_palette = {}
 
-    for driver in driver_list:
+    for driver in valid_drivers:
         try: 
             driver_palette[driver] = fastf1.plotting.get_driver_color(driver, session=race)
         except Exception:
@@ -96,13 +94,13 @@ def create_driver_traces(year, event, session_type, drivers):
 # Next we set up the scatterplot
 
     fig2, ax2 = plt.subplots(figsize = (8, 6))
-    fig2.patch.set_facecolor("black")
-    ax2.set_facecolor("black")
+    fig2.patch.set_facecolor("grey")
+    ax2.set_facecolor("grey")
 
-    ax2.tick_params(colors = "red")
-    ax2.xaxis.label.set_color("white")
-    ax2.yaxis.label.set_color("white")
-    ax2.set_title(f"Scatterplot of lap times during the {year} {event}", color ="white")
+    ax2.tick_params(colors = "yellow")
+    ax2.xaxis.label.set_color("yellow")
+    ax2.yaxis.label.set_color("yellow")
+    ax2.set_title(f"Scatterplot of lap times during the {year} {event}", color ="yellow", fontweight="bold")
 
 
     sns.scatterplot(data=driver_laps,

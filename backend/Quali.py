@@ -16,10 +16,10 @@ def create_quali_plots(year, event, session_type, drivers):
     quali = fastf1.get_session(year, event, session_type)
     quali.load()
 # Now we get an array of the drivers.
-    drivers = pd.unique(quali.laps["Driver"])
+    session_drivers = pd.unique(quali.laps["Driver"])
 # Now to find the fastest laps of the session
     lst_fastest_laps = list()
-    for driver in drivers:
+    for driver in session_drivers:
         drivers_fastest_lap = quali.laps.pick_drivers(driver).pick_fastest()
         if drivers_fastest_lap is not None:
             lst_fastest_laps.append(drivers_fastest_lap)
@@ -316,4 +316,4 @@ def create_quali_plots(year, event, session_type, drivers):
     fig3.suptitle(f"Actual Versus Ideal Laptimes for the {year} {event} Qualifying", fontsize = 20, color = "red")
 # Now to plot all the graphs!
     plt.tight_layout()
-    return fig1, fig2, fig3
+    return fig, fig1, fig2, fig3
