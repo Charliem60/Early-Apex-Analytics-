@@ -218,7 +218,7 @@ def create_quali_plots(year, event, session_type, drivers):
 
 # Actual vs Best possible laptimes for each driver
     ideal_laps= []
-    for driver in drivers:
+    for driver in session_drivers:
         laps = quali.laps.pick_drivers(driver)
         laps = laps.dropna(subset=["Sector1Time", "Sector2Time", "Sector3Time"])
         if laps.empty:
