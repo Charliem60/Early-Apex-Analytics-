@@ -14,11 +14,12 @@ from plotly.subplots import make_subplots
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 # Loading the session data and inmputing the season you want to investigate
 def create_championship_plots(SEASON, ROUND):
-
 # Setting everything ip
     def get_drivers_standings():
         ergast = Ergast()
         standings = ergast.get_driver_standings(season=SEASON, round=ROUND)
+        if len(standings.content) == 0:
+            return None
         return standings.content[0]
 
     def calculate_max_points_for_rest_of_season():
@@ -51,6 +52,8 @@ def create_championship_plots(SEASON, ROUND):
         )   
 # Current driver standings
     driver_stands = get_drivers_standings()
+    if driver_stands is None:
+        raise ValueError(f"No driver standings found for Season {SEASON} and Round {ROUND}.")
 # Get maximum amount of points
     points = calculate_max_points_for_rest_of_season()
     print(points)
@@ -80,25 +83,23 @@ def create_championship_plots(SEASON, ROUND):
 
 # Remaining points
     maximum = [p + points for p in current]
-    plt.figure(figsize=(12, 8))
+    fig1=plt.gcf()
+    fig1, ax = plt.subplots(figsize=(12, 8))
 
-    plt.bar(drivers, maximum, color = "grey", alpha=0.45, label="Maximum Points Availible")
-    plt.bar(drivers, current, color=colors, label = "Current Points")
+    ax.bar(drivers, np.maximum, color = "grey", alpha=0.45, label="Maximum Points Availible")
+    ax.bar(drivers, current, color=colors, label = "Current Points")
     for i, (max_points, state) in enumerate(zip(maximum, status)):
-        plt.text(i, max_points + 5, state, ha="center", fontsize=9, color = "white")
-        plt.axhline(leader_points, color = "gold", linestyle = "--", linewidth=4, label = "Leader's Current Points")
-        plt.xticks(rotation=45)
-        plt.ylabel("Championship Points")
-        plt.xlabel("Drivers")
-        plt.title(f"{SEASON} Drivers Championship Standings - Who can still write history?", color = "red")
-        plt.legend()
-        plt.tight_layout()
-        plt.show()
-
+        ax.text(i, max_points + 5, state, ha="center", fontsize=9, color = "white")
+        ax.axhline(leader_points, color = "gold", linestyle = "--", linewidth=4, label = "Leader's Current Points")
+        ax.set_xticks(rotation=45)
+        ax.set_ylabel("Championship Points")
+        ax.set_xlabel("Drivers")
+        ax.set_title(f"{SEASON} Drivers Championship Standings - Who can still write history?", color = "red")
+        ax.legend()
+        ax.tight_layout()
 
 # Season Summery Visiual
-    season =  int(input("Enter an F1 season here: "))
-    schedule = fastf1.get_event_schedule(season, include_testing=False)
+    schedule = fastf1.get_event_schedule(SEASON, include_testing=False)
 
     standings = []
     short_race_names = []
@@ -107,21 +108,21 @@ def create_championship_plots(SEASON, ROUND):
         event_name, round_number = event["EventName"], event["RoundNumber"]
         short_race_names.append(event_name.replace("Grand Prix", "").strip())
     # Getting the results from each race
-        race = fastf1.get_session(season, event_name, "R")
+        race = fastf1.get_session(SEASON, event_name, "R")
         race.load(laps=False, telemetry=False, weather=False, messages=False)
     # Adding sprint points
         sprint = None
         if event["EventFormat"] == "sprint_qualifying":
-            sprint = fastf1.get_session(season, event_name, "S")
+            sprint = fastf1.get_session(SEASON, event_name, "S")
             sprint.load(laps=False, telemetry=False, weather=False, messages=False)
     
         for _, driver_row in race.results.iterrows():
             abbreviation, race_points, race_position = ( driver_row["Abbreviation"], driver_row["Points"], driver_row["Position"],)
             sprint_points = 0
             if sprint is not None:
-             driver_row = sprint.results[sprint.results["Abbreviation"] == abbreviation]
-            if not driver_row.empty:
-                    sprint_points = driver_row["Points"].values[0]
+             sprint_driver = sprint.results[sprint.results["Abbreviation"] == abbreviation]
+            if not sprint_driver.empty:
+                    sprint_points = sprint_driver.iloc[0]["Points"]
         
             standings.append(
                 {
@@ -151,7 +152,7 @@ def create_championship_plots(SEASON, ROUND):
         for driver in heatmap_data.index
     ]
 # Creating the subplots for the headings created
-    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {season} Drivers Championship Standings", "Total Points",))
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Drivers Championship Standings", "Total Points",))
     fig.update_layout(width=1300, height=800, template="plotly_dark")
 # Crafting the plot
     fig.add_trace(
@@ -196,7 +197,7 @@ def create_championship_plots(SEASON, ROUND):
     )
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
-    show(fig)
+    fig2=fig
 
 
 # Season Summery Visiual but for the constructers championship
@@ -207,12 +208,12 @@ def create_championship_plots(SEASON, ROUND):
         event_name, round_number = event["EventName"], event["RoundNumber"]
         short_race_names.append(event_name.replace("Grand Prix", "").strip())
     # Getting the results from each race
-        race = fastf1.get_session(season, event_name, "R")
+        race = fastf1.get_session(SEASON, event_name, "R")
         race.load(laps=False, telemetry=False, weather=False, messages=False)
     # Adding sprint points
         sprint = None
         if event["EventFormat"] == "sprint_qualifying":
-            sprint = fastf1.get_session(season, event_name, "S")
+            sprint = fastf1.get_session(SEASON, event_name, "S")
             sprint.load(laps=False, telemetry=False, weather=False, messages=False)
     # Storing all the points for each driver in each team
         for _, driver_row in race.results.iterrows():
@@ -223,7 +224,7 @@ def create_championship_plots(SEASON, ROUND):
             if sprint is not None:
                 sprint_driver = sprint.results[sprint.results["Abbreviation"] == abbreviation]
                 if not sprint_driver.empty:
-                    sprint_points = sprint_driver["Points"].values[0]
+                    sprint_points = sprint_driver.iloc[0]["Points"]
         
             standings.append(
                 {
@@ -244,7 +245,7 @@ def create_championship_plots(SEASON, ROUND):
     total_points = heatmap_data["total_points"].values
     heatmap_data = heatmap_data.drop(columns=["total_points"])
 #Creating the subplots for the headings created
-    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {season} Constructers Championship Standings", "Total Points",))
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Constructers Championship Standings", "Total Points",))
     fig.update_layout(width=1300, height=800, template="plotly_dark")
 # Crafting the plot
     fig.add_trace(
@@ -291,4 +292,5 @@ def create_championship_plots(SEASON, ROUND):
     )
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
-    fig.show()
+    fig3 = fig
+    return fig1, fig2, fig3

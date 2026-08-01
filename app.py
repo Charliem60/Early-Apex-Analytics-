@@ -1,9 +1,10 @@
 import streamlit as st
+import fastf1
 
 from backend.fastf1data import get_races, get_drivers
 from backend.Driveranalysis import create_driver_lap_data
 from backend.Quali import create_quali_plots
-
+from backend.Championship import create_championship_plots
 
 # -----------------------------------
 # Page configuration
@@ -15,8 +16,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("F1 Dashboard")
-
+st.title("🏎️ F1 Dashboard")
 
 # -----------------------------------
 # Race Selection
@@ -32,11 +32,6 @@ year = st.number_input(
     step=1
 )
 
-
-# -----------------------------------
-# Race
-# -----------------------------------
-
 races = get_races(year)
 
 selected_race = st.selectbox(
@@ -44,20 +39,10 @@ selected_race = st.selectbox(
     races
 )
 
-
-# -----------------------------------
-# Session
-# -----------------------------------
-
 session_type = st.selectbox(
     "Select session",
     ["R", "S"]
 )
-
-
-# -----------------------------------
-# Drivers
-# -----------------------------------
 
 drivers = get_drivers(
     year,
@@ -70,18 +55,21 @@ selected_drivers = st.multiselect(
     drivers
 )
 
-
 # -----------------------------------
-# Driver Analysis
+# Generate Dashboard
 # -----------------------------------
 
-if selected_drivers:
+if st.button("Generate Dashboard"):
 
-    generate = st.button("Generate Analysis")
+    # ==========================================
+    # Driver Analysis
+    # ==========================================
 
-    if generate:
+    if selected_drivers:
 
-        with st.spinner("Loading F1 session data..."):
+        st.header("Driver Analysis")
+
+        with st.spinner("Generating driver analysis..."):
 
             fig1, fig2 = create_driver_lap_data(
                 year,
@@ -90,20 +78,19 @@ if selected_drivers:
                 selected_drivers
             )
 
-        st.subheader("Lap Time Analysis")
-        st.pyplot(fig1)
+        if fig1 is not None:
+            st.pyplot(fig1)
 
-        st.subheader("Lap Time Scatterplot")
-        st.pyplot(fig2)
-# -----------------------------------
-# Qualifying Analysis
-# -----------------------------------
+        if fig2 is not None:
+            st.pyplot(fig2)
 
-st.header("Qualifying Analysis")
+    # ==========================================
+    # Qualifying Analysis
+    # ==========================================
 
-if st.button("Generate Qualifying Report"):
+    st.header("Qualifying Analysis")
 
-    with st.spinner("Loading qualifying data..."):
+    with st.spinner("Generating qualifying analysis..."):
 
         quali_fig, quali_fig1, quali_fig2, quali_fig3 = create_quali_plots(
             year,
@@ -112,14 +99,46 @@ if st.button("Generate Qualifying Report"):
             selected_drivers
         )
 
-    st.subheader("Qualifying Results")
     st.pyplot(quali_fig)
-
-    st.subheader("Q1, Q2 & Q3 Results")
     st.pyplot(quali_fig1)
-
-    st.subheader("Sector Results")
     st.pyplot(quali_fig2)
-
-    st.subheader("Actual vs Ideal Lap Times")
     st.pyplot(quali_fig3)
+
+    # ==========================================
+    # Championship Analysis
+    # ==========================================
+
+    st.header("Championship Analysis")
+
+    schedule = fastf1.get_event_schedule(year)
+
+    round_number = int(
+        schedule.loc[
+            schedule["EventName"] == selected_race,
+            "RoundNumber"
+        ].iloc[0]
+    )
+
+    st.write(f"Championship after Round {round_number}")
+
+    try:
+
+        champ_fig1, champ_fig2, champ_fig3 = create_championship_plots(
+            year,
+            round_number
+        )
+
+        st.pyplot(champ_fig1)
+
+        st.plotly_chart(
+            champ_fig2,
+            use_container_width=True
+        )
+
+        st.plotly_chart(
+            champ_fig3,
+            use_container_width=True
+        )
+
+    except Exception as e:
+        st.error(f"Championship analysis failed:\n\n{e}")
