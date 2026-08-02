@@ -8,7 +8,7 @@ from matplotlib.ticker import MultipleLocator
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 # Loading the session data and inmputing the race you want to investigate
-def create_race_traces(year, event, session_type, drivers):
+def create_race_traces(year, event, session_type, drivers=None):
     race = fastf1.get_session(year, event, session_type)
     race.load()
     strategy_laps = race.laps
@@ -41,10 +41,7 @@ def create_race_traces(year, event, session_type, drivers):
     plt.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
 
 # Now a tyre stragedy plot
-    drivers = race.drivers
-    drivers = [race.get_driver(driver)["Abbreviation"] for driver in drivers]
-
-
+    race_drivers = [race.get_driver(driver)["Abbreviation"] for driver in race.drivers]
     stints = strategy_laps[["Driver", "Stint", "Compound", "LapNumber", "FreshTyre"]]
     stints=stints.dropna(subset=["Compound", "Stint"])
     stints = stints.groupby(["Driver", "Stint", "Compound", "FreshTyre"]).count().reset_index()
@@ -52,7 +49,7 @@ def create_race_traces(year, event, session_type, drivers):
 
 # Now we can plot the stragedies
     fig1, ax1, = plt.subplots(figsize=(12,8))
-    for driver in drivers:
+    for driver in race.drivers:
         driver_stints = stints[stints["Driver"] == driver]
         if driver_stints.empty:
             continue
@@ -195,18 +192,21 @@ def create_race_traces(year, event, session_type, drivers):
         if drive.empty:
             continue
         drive = drive.merge(ref_laps, on="LapNumber", how="left")
-        drive["Gap"] = (drive["RefTime"] - drive["Time"]).dt.total_seconds()
+        drive["Gap"] = (drive["Time"] - drive["RefTime"]).dt.total_seconds()
         abb = drive["Driver"].iloc[0]
 
         style = fastf1.plotting.get_driver_style(abb,session=race, style=["color", "linestyle"])
         ax3.plot(drive["LapNumber"], drive["Gap"], linewidth=2, label=abb, **style)
 
-        ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "red")
-        ax3.set_xlabel("Lap")
-        ax3.set_ylabel("Gap (s)")
-        ax3.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
-        ax3.legend(bbox_to_anchor=(1.02,1), loc="upper left")
+    ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "red")
+    ax3.set_xlabel("Lap")
+    ax3.set_ylabel("Gap (s)")
+    ax3.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
+    ax3.legend(bbox_to_anchor=(1.02,1), loc="upper left")
 
 
     fig.tight_layout()
+    fig1.tight_layout()
+    fig2.tight_layout()
+    fig3.tight_layout()
     return fig, fig1, fig2, fig3

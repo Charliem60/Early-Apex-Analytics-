@@ -83,20 +83,19 @@ def create_championship_plots(SEASON, ROUND):
 
 # Remaining points
     maximum = [p + points for p in current]
-    fig1=plt.gcf()
     fig1, ax = plt.subplots(figsize=(12, 8))
 
-    ax.bar(drivers, np.maximum, color = "grey", alpha=0.45, label="Maximum Points Availible")
+    ax.bar(drivers, maximum, color = "grey", alpha=0.45, label="Maximum Points Availible")
     ax.bar(drivers, current, color=colors, label = "Current Points")
     for i, (max_points, state) in enumerate(zip(maximum, status)):
         ax.text(i, max_points + 5, state, ha="center", fontsize=9, color = "white")
-        ax.axhline(leader_points, color = "gold", linestyle = "--", linewidth=4, label = "Leader's Current Points")
-        ax.set_xticks(rotation=45)
-        ax.set_ylabel("Championship Points")
-        ax.set_xlabel("Drivers")
-        ax.set_title(f"{SEASON} Drivers Championship Standings - Who can still write history?", color = "red")
-        ax.legend()
-        ax.tight_layout()
+    ax.axhline(leader_points, color = "gold", linestyle = "--", linewidth=4, label = "Leader's Current Points")
+    ax.tick_params(axis="x", rotation=45)
+    ax.set_ylabel("Championship Points")
+    ax.set_xlabel("Drivers")
+    ax.set_title(f"{SEASON} Drivers Championship Standings - Who can still write history?", color = "red")
+    ax.legend()
+    fig1.tight_layout()
 
 # Season Summery Visiual
     schedule = fastf1.get_event_schedule(SEASON, include_testing=False)
@@ -118,11 +117,12 @@ def create_championship_plots(SEASON, ROUND):
     
         for _, driver_row in race.results.iterrows():
             abbreviation, race_points, race_position = ( driver_row["Abbreviation"], driver_row["Points"], driver_row["Position"],)
+            race_points = driver_row["Points"]
             sprint_points = 0
             if sprint is not None:
              sprint_driver = sprint.results[sprint.results["Abbreviation"] == abbreviation]
-            if not sprint_driver.empty:
-                    sprint_points = sprint_driver.iloc[0]["Points"]
+             if not sprint_driver.empty:
+                 sprint_points = sprint_driver.iloc[0]["Points"]
         
             standings.append(
                 {

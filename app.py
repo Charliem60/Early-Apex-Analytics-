@@ -5,7 +5,8 @@ from backend.fastf1data import get_races, get_drivers
 from backend.Driveranalysis import create_driver_lap_data
 from backend.Quali import create_quali_plots
 from backend.Championship import create_championship_plots
-
+from backend.Race import create_race_traces
+from backend.Telemetryanalysis import create_track_visuals
 # -----------------------------------
 # Page configuration
 # -----------------------------------
@@ -129,16 +130,41 @@ if st.button("Generate Dashboard"):
         )
 
         st.pyplot(champ_fig1)
-
-        st.plotly_chart(
-            champ_fig2,
-            use_container_width=True
-        )
-
-        st.plotly_chart(
-            champ_fig3,
-            use_container_width=True
-        )
+        st.plotly_chart(champ_fig2, use_container_width=True)
+        st.plotly_chart(champ_fig3, use_container_width=True)
 
     except Exception as e:
         st.error(f"Championship analysis failed:\n\n{e}")
+
+    # ==========================================
+    # Race Analysis
+    # ==========================================
+
+    st.header("Race Analysis")
+
+    with st.spinner("Generating race analysis..."):
+
+        trace_fig1, trace_fig2, trace_fig3, trace_fig4 = create_race_traces(
+            year,
+            selected_race,
+            "R",
+            None
+        )
+
+    st.pyplot(trace_fig1)
+    st.pyplot(trace_fig2)
+    st.pyplot(trace_fig3)
+    st.pyplot(trace_fig4)
+    ####################################
+    #Telemetry Analysis
+    ####################################
+    st.header("Telemetry Analysis")
+    with st.spinner("Generating telemetry analysis..."):
+        telemetry_fig, telemetry_fig1, = create_track_visuals(
+            year,
+            selected_race,
+            "Q",
+            selected_drivers
+        )
+    st.pyplot(telemetry_fig, use_container_width=True)
+    st.pyplot(telemetry_fig1, use_container_width=True)
