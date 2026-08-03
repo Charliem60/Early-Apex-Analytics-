@@ -7,6 +7,9 @@ from backend.Quali import create_quali_plots
 from backend.Championship import create_championship_plots
 from backend.Race import create_race_traces
 from backend.Telemetryanalysis import create_track_visuals
+from backend.Telemetrydashboard import create_tele_dashboard
+from backend.TrackMap import create_track_map
+from backend.Weather import create_weather_dashboard
 # -----------------------------------
 # Page configuration
 # -----------------------------------
@@ -168,3 +171,39 @@ if st.button("Generate Dashboard"):
         )
     st.pyplot(telemetry_fig, use_container_width=True)
     st.pyplot(telemetry_fig1, use_container_width=True)
+    #####################################
+    #Telemetry Dashboard
+    #####################################
+    st.header("Telemetry Dashboard")
+    with st.spinner("Generating telemetry dashboard..."):
+        tele_dashboard_fig = create_tele_dashboard(
+            year,
+            selected_race,
+            "Q",
+            selected_drivers
+        )
+    st.plotly_chart(tele_dashboard_fig, use_container_width=True)
+    ######################################
+    #Track Map
+    ######################################
+    st.header("Track Map")
+    with st.spinner("Generating Track Map..."):
+        map_track_fig = create_track_map(
+            year, selected_race, "Q", selected_drivers
+        )
+    st.pyplot(map_track_fig, use_container_width=True)
+
+
+
+
+    #######################################
+    # Weather Dashboard
+    #######################################
+    st.header("Weather Dashboard")
+    with st.spinner("Generating weather dashboard..."):
+        weather_fig = create_weather_dashboard(
+            year,
+            selected_race,
+            "R"
+        )
+    st.plotly_chart(weather_fig, use_container_width=True)

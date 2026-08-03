@@ -40,5 +40,5 @@ def create_weather_dashboard(year, event, session_type):
     axes[-1].set_xlabel("Session Time (minutes)")
 
 # Setting up the plots
-    fig.show()
+    return fig
 
