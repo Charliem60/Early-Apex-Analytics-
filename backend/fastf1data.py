@@ -1,12 +1,14 @@
+import streamlit as st
 import fastf1
 
 
+@st.cache_data(show_spinner=False)
 def get_races(year):
     schedule = fastf1.get_event_schedule(year)
-
     return schedule["EventName"].dropna().tolist()
 
 
+@st.cache_data(show_spinner=False)
 def get_drivers(year, event, session_type):
 
     session = fastf1.get_session(
@@ -15,7 +17,6 @@ def get_drivers(year, event, session_type):
         session_type
     )
 
-    # Only load session information needed to identify drivers
     session.load(
         laps=False,
         telemetry=False,
@@ -23,7 +24,6 @@ def get_drivers(year, event, session_type):
         messages=False
     )
 
-    # Get driver abbreviations rather than driver numbers
     if not session.results.empty and "Abbreviation" in session.results.columns:
         return (
             session.results["Abbreviation"]
