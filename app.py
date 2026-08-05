@@ -150,14 +150,17 @@ with tab1:
     )
 
     st.markdown("""
-    #This is a web app that with the help of FastF1 API data, allows you to explore F1 data from 2018 to present. The types of data you can explore is explained below:")
-    # Before contuining, please note that this app is very much in early development, and there will be bugs and issues that I haven't ironed out.
-    # Thanks for the support.
-    """
+    This is a web app that with the help of FastF1 API data, allows you to explore F1 data from 2018 to present. The types of data you can explore is explained below.
+    <br>
+
+    ⚠️ 
+    Please note that this app is very much in early development, and there will be bugs and issues that I haven't ironed out just yet. There will be updates gradually across the coming months and years.
+    <br>
+
+    Thank you for your support.
+    """, unsafe_allow_html=True
     )
-
     st.divider()
-
     st.subheader("What data you can explore:")
 
     col1, col2 = st.columns(2)
