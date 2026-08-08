@@ -155,6 +155,7 @@ with tab1:
 
     ⚠️ 
     Please note that this app is very much in early development, and there will be bugs and issues that I haven't ironed out just yet. There will be updates gradually across the coming months and years.
+    ⚠️
     <br>
 
     Thank you for your support.
@@ -199,7 +200,7 @@ with tab1:
 ################################
 with tab2:
     st.header("Qualifying Analysis")
-    st.write("Use this section to analyze qualifying sessions for a selected race, such as ideal vs actual lap times, sector performance, and more.")
+    st.write("Use this section to analyze qualifying sessions for a selected race, such as ideal vs actual lap times, sector performance, and more. Pick and Choose a season and race using the inputs below.")
     quali_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="quali_year")
     quali_races= get_races(quali_year)
     quali_race = st.selectbox("Race", quali_races, key="quali_race")
@@ -215,8 +216,10 @@ with tab2:
             )
 
         st.pyplot(quali_fig)
+        st.write("The two following charts show the complete results across the session and the sector times for each driver in the qualifying session.")
         st.pyplot(quali_fig1)
         st.pyplot(quali_fig2)
+        st.write("The following chart shows the ideal lap time vs the actual lap time for each driver in the qualifying session. The ideal lap time is calculated by taking the best sector times from all drivers and combining them to create a theoretical 'perfect' lap. The actual lap time is the time that each driver actually achieved during their qualifying laps.")
         st.pyplot(quali_fig3)
 
     #######################################
@@ -224,7 +227,7 @@ with tab2:
     #######################################
 with tab6:
     st.header("Weather Dashboard")
-    st.write("Use this section to analyze weather conditions for a selected race and session, including temperature, humidity, wind speed, and more.")
+    st.write("Use this section to analyze weather conditions for a selected race and session, including temperature, humidity, wind speed, and more to understand their impact on a given session.")
     weather_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="weather_year")
     weather_race = st.selectbox("Race", get_races(weather_year), key="weather_race")
     weather_session = st.selectbox("Session", get_sessions(weather_year, weather_race), key="weather_session")
@@ -245,7 +248,9 @@ with tab3:
         with st.spinner("Generating race charts..."):
             race_fig1, race_fig2, race_fig3, race_fig4 = create_race_traces(race_year, race_race, race_session)
         st.pyplot(race_fig1)
+        st.write("The following chart shows the strategy used by each driver during the race.")
         st.pyplot(race_fig2)
+        st.write("The following charts show the race pace distribution for each team and how the gap to the race leader changed over the course of the race.")
         st.pyplot(race_fig3)
         st.pyplot(race_fig4)
 
@@ -254,7 +259,7 @@ with tab3:
 ######################################
 with tab4:
     st.header("Driver Charts and Analysis")
-    st.write("Use this section to compare drivers over the course of race stints and other metrics.")
+    st.write("Use this section to compare drivers over the course of race stints and other metrics. You can select multiple drivers to compare their performance during any session. Investigate their lap times over the course of a session on a lap-by-lap basis, and compare their performance against each other.")
     driver_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="driver_year")
     driver_race = st.selectbox("Race", get_races(driver_year), key="driver_race")
     driver_session = st.selectbox("Session", get_sessions(driver_year, driver_race), key="driver_session")
@@ -270,7 +275,7 @@ with tab4:
 ######################################
 with tab5:
     st.header("Telemetry Graphics")
-    st.write("Use this section to visualize telemetry data for selected drivers and sessions.")
+    st.write("Use this section to visualize telemetry data for any selected drivers in a session of your choice. Please pick four drivers!")
     telemetry_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="telemetry_year")
     telemetry_race = st.selectbox("Race", get_races(telemetry_year), key="telemetry_race")
     telemetry_session = st.selectbox("Session", get_sessions(telemetry_year, telemetry_race), key="telemetry_session")
@@ -279,6 +284,8 @@ with tab5:
     if st.button("Generate Charts", key="telemetry_charts_button"):
         with st.spinner("Generating telemetry charts..."):
             telemetry_fig1, telemetry_fig2 = create_track_visuals(telemetry_year, telemetry_race, telemetry_session, selected_telemetry_drivers)
+        st.write("The first visual plots the gears used across the track, highlighting deployment tactics and the differing gear ratios of different teams." \
+        " The second visual shows the speed across the track, again highlighting deployment tactics. Please pick four drivers so that the graphs don't crash!")
         st.pyplot(telemetry_fig1)
         st.pyplot(telemetry_fig2)
 
@@ -287,13 +294,11 @@ with tab5:
 ######################################
 with tab7:
     st.header("Championship Standings")
-    st.write("Use this section to view the championship standings for a selected season and round.")
+    st.write("Use this section to view the championship standings across past seasons and how a title fight develops.")
     champ_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="champ_year")
-    champ_round = st.selectbox("Round", list(range(1, 24)), index=0, key="champ_round")
     if st.button("Generate Championship Standings", key="champ_standings_button"):
         with st.spinner("Generating championship standings..."):
-            champ_fig1, champ_fig2, champ_fig3 = create_championship_plots(champ_year, champ_round)
-        st.pyplot(champ_fig1)
+            champ_fig2, champ_fig3 = create_championship_plots(champ_year)
         st.plotly_chart(champ_fig2, use_container_width=True)
         st.plotly_chart(champ_fig3, use_container_width=True)
 #######################################
@@ -301,7 +306,7 @@ with tab7:
 ######################################
 with tab8:
     st.header("Telemetry Dashboard")
-    st.write("Use this section to visualize telemetry data for selected drivers and sessions in a dashboard format.")
+    st.write("Use this section to inspect telemetry data for selected drivers in any session in a dashboard format.")
     tele_dash_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="tele_dash_year")
     tele_dash_race = st.selectbox("Race", get_races(tele_dash_year), key="tele_dash_race")
     tele_dash_session = st.selectbox("Session", get_sessions(tele_dash_year, tele_dash_race), key="tele_dash_session")
@@ -310,7 +315,9 @@ with tab8:
     if st.button("Generate Telemetry Dashboard", key="tele_dash_button"):
           with st.spinner("Generating telemetry dashboard..."):
                 tele_dash_fig = create_tele_dashboard(tele_dash_year, tele_dash_race, tele_dash_session, selected_tele_dash_drivers)
-                map_track_fig = create_track_map(tele_dash_year, tele_dash_race)
+                map_track_fig = create_track_map(tele_dash_year, tele_dash_race, tele_dash_session, selected_tele_dash_drivers)
           st.plotly_chart(tele_dash_fig, use_container_width=True)
+          st.write("In the above dashboard you can investigate differing gear changes, identify differing battery deployment rates, where drivers are braking, and find out where time is won and lost." \
+          "In the track map below, it plots the fastest laps of your selected drivers in the given session, and shows who is quicker and where.")
           st.pyplot(map_track_fig)
 

@@ -53,7 +53,7 @@ def create_track_map(year, event, session_type, drivers):
             driver_colors[driver] = color
             see_colors[color] = driver
 # Building the plot
-    fig, ax = plt.subplots(figsize=(12, 7))
+    fig, ax = plt.subplots(figsize=(11, 7))
     base = LineCollection(segments, linewidth=8, alpha = 0.7, colors="white")
     ax.add_collection(base)
 # Racing line
@@ -66,11 +66,11 @@ def create_track_map(year, event, session_type, drivers):
     circuit = race.get_circuit_info()
     corners = circuit.corners
     for _, corner in corners.iterrows():
-        ax.text(corner["X"], corner["Y"], str(corner["Number"]), color="black", fontsize=8, weight="bold", ha="center", va="center")
+        ax.text(corner["X"], corner["Y"], str(corner["Number"]), color="yellow", fontsize=8, weight="bold", ha="center", va="center")
 # Formating everything
     ax.axis("equal")
     ax.axis("off")
     ax.legend(handles=legend_elements, loc="upper left")
-    plt.title(f"{year} {event} {session_type} Fastest Lap Track Domination Comparison Plot", color="red", fontsize=16, fontweight="bold")
+    plt.title(f"{year} {event} {session_type} Fastest Lap Track Domination Comparison Plot", color="yellow", fontsize=16, fontweight="bold")
     plt.tight_layout()
     return fig

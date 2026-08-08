@@ -36,9 +36,6 @@ def create_driver_lap_data(year, event, session_type, drivers):
 
 # Set up the colours of the graph and its titles
     fig1, ax1 = plt.subplots(figsize=(11, 7))
-    fig1.patch.set_facecolor('grey')  
-    ax1.set_facecolor('grey')
-
     ax1.tick_params(colors='yellow')  
     ax1.xaxis.label.set_color('yellow')
     ax1.yaxis.label.set_color('yellow')
@@ -67,7 +64,7 @@ def create_driver_lap_data(year, event, session_type, drivers):
         ax1.annotate(
         format_laptime(fastest_lap["LapTime"]),
        ( fastest_lap["LapNumber"],fastest_lap["LapTime"]),
-        xytext=(8,8,),textcoords = "offset points", color = "white", fontsize=12,
+        xytext=(8,8,),textcoords = "offset points", color = "yellow", fontsize=12,
     )
 
 
@@ -93,9 +90,9 @@ def create_driver_lap_data(year, event, session_type, drivers):
 
 # Next we set up the scatterplot
 
-    fig2, ax2 = plt.subplots(figsize = (8, 6))
-    fig2.patch.set_facecolor("grey")
-    ax2.set_facecolor("grey")
+    fig2, ax2 = plt.subplots(figsize = (11, 7))
+    fig2.patch.set_facecolor("fastf1")
+    ax2.set_facecolor("fastf1")
 
     ax2.tick_params(colors = "yellow")
     ax2.xaxis.label.set_color("yellow")

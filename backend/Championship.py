@@ -13,90 +13,7 @@ from plotly.subplots import make_subplots
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
 # Loading the session data and inmputing the season you want to investigate
-def create_championship_plots(SEASON, ROUND):
-# Setting everything ip
-    def get_drivers_standings():
-        ergast = Ergast()
-        standings = ergast.get_driver_standings(season=SEASON, round=ROUND)
-        if len(standings.content) == 0:
-            return None
-        return standings.content[0]
-
-    def calculate_max_points_for_rest_of_season():
-        Points_Sprint = 33
-        Points_Conventional = 25
-
-        events = fastf1.events.get_event_schedule(SEASON, backend = "ergast")
-        print(events[["RoundNumber", "EventName", "EventFormat"]])
-        print(events["EventFormat"].unique())
-        events = events[events['RoundNumber'] > ROUND]
-
-        sprint_events = len(events.loc[events["EventFormat"] == "sprint_qualifying"])
-        conventional_event = len(events.loc[events["EventFormat"]== "conventional"])
-
-        sprint_points = Points_Sprint * sprint_events
-        conventional_points = conventional_event * Points_Conventional
-        return sprint_points + conventional_points
-
-    def calculate_who_can_win(drivers_standings, max_points):
-        Leader_Points = int(drivers_standings.loc[0]['points'])
-        for i, _ in enumerate(drivers_standings.iterrows()):
-            driver = drivers_standings.loc[i]
-            driver_max_points = int(driver["points"]) + max_points
-            can_Win = "No" if driver_max_points < Leader_Points else "Yes"
-        
-            print(f"{driver['position']}:{driver['givenName']} {driver['familyName']},"
-            f"Current Points: {driver['points']},"
-            f"Theoretical maximum points: {driver_max_points},"
-            f"Can win: {can_Win}"
-        )   
-# Current driver standings
-    driver_stands = get_drivers_standings()
-    if driver_stands is None:
-        raise ValueError(f"No driver standings found for Season {SEASON} and Round {ROUND}.")
-# Get maximum amount of points
-    points = calculate_max_points_for_rest_of_season()
-    print(points)
-# Print which drivers can still win
-    calculate_who_can_win(driver_stands, points)
-# Plotting a graph about this
-    drivers = []
-    current = []
-    colors = []
-    status = []
-
-    leader_points = int(driver_stands.loc[0]["points"])
-                    
-    for i in range(len(driver_stands)):
-        driver = driver_stands.loc[i]
-        current_points = int(driver["points"])
-        drivers.append(driver["familyName"])
-        current.append(current_points)
-
-    # Dealng with the colour current bars
-        if current_points + points >= leader_points:
-            colors.append("green")
-            status.append("Alive")
-        else:
-            colors.append("gold")
-            status.append("Eliminated")
-
-# Remaining points
-    maximum = [p + points for p in current]
-    fig1, ax = plt.subplots(figsize=(12, 8))
-
-    ax.bar(drivers, maximum, color = "grey", alpha=0.45, label="Maximum Points Availible")
-    ax.bar(drivers, current, color=colors, label = "Current Points")
-    for i, (max_points, state) in enumerate(zip(maximum, status)):
-        ax.text(i, max_points + 5, state, ha="center", fontsize=9, color = "white")
-    ax.axhline(leader_points, color = "gold", linestyle = "--", linewidth=4, label = "Leader's Current Points")
-    ax.tick_params(axis="x", rotation=45)
-    ax.set_ylabel("Championship Points")
-    ax.set_xlabel("Drivers")
-    ax.set_title(f"{SEASON} Drivers Championship Standings - Who can still write history?", color = "red")
-    ax.legend()
-    fig1.tight_layout()
-
+def create_championship_plots(SEASON):
 # Season Summery Visiual
     schedule = fastf1.get_event_schedule(SEASON, include_testing=False)
 
@@ -152,7 +69,7 @@ def create_championship_plots(SEASON, ROUND):
         for driver in heatmap_data.index
     ]
 # Creating the subplots for the headings created
-    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Drivers Championship Standings", "Total Points",))
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Drivers Championship Standings", "Total Points"))
     fig.update_layout(width=1300, height=800, template="plotly_dark")
 # Crafting the plot
     fig.add_trace(
@@ -197,6 +114,9 @@ def create_championship_plots(SEASON, ROUND):
     )
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
+    fig.update_layout(
+        font=dict(color="yellow")
+    )
     fig2=fig
 
 
@@ -245,7 +165,7 @@ def create_championship_plots(SEASON, ROUND):
     total_points = heatmap_data["total_points"].values
     heatmap_data = heatmap_data.drop(columns=["total_points"])
 #Creating the subplots for the headings created
-    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Constructers Championship Standings", "Total Points",))
+    fig = make_subplots(rows=1, cols=2, column_widths=[0.90, 0.20], subplot_titles=(f"F1 {SEASON} Constructers Championship Standings", "Total Points"))
     fig.update_layout(width=1300, height=800, template="plotly_dark")
 # Crafting the plot
     fig.add_trace(
@@ -292,5 +212,8 @@ def create_championship_plots(SEASON, ROUND):
     )
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
+    fig.update_layout(
+        font=dict(color="yellow")
+    )
     fig3 = fig
-    return fig1, fig2, fig3
+    return fig2, fig3

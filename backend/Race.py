@@ -14,7 +14,7 @@ def create_race_traces(year, event, session_type, drivers=None):
     strategy_laps = race.laps
     laps = race.laps.pick_quicklaps()
 
-    fig, ax = plt.subplots(figsize=(9.0, 5.0))
+    fig, ax = plt.subplots(figsize=(11,7))
 
 # First graph - Showing position changes during a race
     for driver in race.drivers:
@@ -34,7 +34,7 @@ def create_race_traces(year, event, session_type, drivers=None):
     ax.set_yticks(range(1,23))
     ax.set_xlabel("Lap")
     ax.set_ylabel("Position")
-    ax.set_title(f"{event} {year} - Race Position Changes", fontsize=22, pad=30, color="red")
+    ax.set_title(f"{event} {year} - Race Position Changes", fontsize=22, pad=30, color="yellow")
 # Add legend
     ax.legend(bbox_to_anchor=(1.02,1), loc="upper left", title="Drivers", fontsize=10,ncol=1)
     plt.tight_layout()
@@ -42,6 +42,7 @@ def create_race_traces(year, event, session_type, drivers=None):
 
 # Now a tyre stragedy plot
     race_drivers = [race.get_driver(driver)["Abbreviation"] for driver in race.drivers]
+    strategy_laps = race.laps
     stints = strategy_laps[["Driver", "Stint", "Compound", "LapNumber", "FreshTyre"]]
     stints=stints.dropna(subset=["Compound", "Stint"])
     stints = stints.groupby(["Driver", "Stint", "Compound", "FreshTyre"]).count().reset_index()
@@ -49,10 +50,9 @@ def create_race_traces(year, event, session_type, drivers=None):
 
 # Now we can plot the stragedies
     fig1, ax1, = plt.subplots(figsize=(12,8))
-    for driver in race.drivers:
+    for driver in race.results["Abbreviation"].dropna():
         driver_stints = stints[stints["Driver"] == driver]
-        if driver_stints.empty:
-            continue
+
 
         previous_stint_end = 0
 
@@ -131,7 +131,7 @@ def create_race_traces(year, event, session_type, drivers=None):
 ]
 
 
-    fig1.suptitle(f"{event} {year} - Race Strategies", fontsize=20, y=0.96, fontweight="bold", color = "red")
+    fig1.suptitle(f"{event} {year} - Race Strategies", fontsize=20, y=0.96, fontweight="bold", color = "yellow")
     ax1.legend(handles=legend_elements, title="Tyre Compounds", loc="upper center", bbox_to_anchor=(0.5, 1.04), ncol=7, frameon=False)
     ax1.invert_yaxis()
     ax1.set_xlabel("Lap Number")
@@ -172,7 +172,7 @@ def create_race_traces(year, event, session_type, drivers=None):
     showfliers=False
     )
 # Setting axises
-    ax2.set_title(f"{event} {year} - Team Race Pace Distribution", fontsize=22, pad=30, color="red")
+    ax2.set_title(f"{event} {year} - Team Race Pace Distribution", fontsize=22, pad=30, color="yellow")
     ax2.set(xlabel=None)
     ax2.set_ylabel("Lap Times (seconds)")
     plt.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
@@ -198,7 +198,7 @@ def create_race_traces(year, event, session_type, drivers=None):
         style = fastf1.plotting.get_driver_style(abb,session=race, style=["color", "linestyle"])
         ax3.plot(drive["LapNumber"], drive["Gap"], linewidth=2, label=abb, **style)
 
-    ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "red")
+    ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "yellow")
     ax3.set_xlabel("Lap")
     ax3.set_ylabel("Gap (s)")
     ax3.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")

@@ -35,7 +35,7 @@ def create_quali_plots(year, event, session_type, drivers):
         color = fastf1.plotting.get_team_color(lap["Team"], session=quali)
         team_colors.append(color)
 # Plotting the data
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(11, 7))
     bars = ax.barh(fastest_laps.index, fastest_laps["Gap"], color=team_colors, edgecolor="black")
     seen_teams = set()
     for bar, (_, lap) in zip(bars, fastest_laps.iterlaps()):
@@ -53,7 +53,7 @@ def create_quali_plots(year, event, session_type, drivers):
 
         if i == 0:
             ax.text(0.01, i,
-                 strftimedelta(lap["LapTime"], '%m:%s.%ms'), color="white", fontsize=10, va="center", ha="left")
+                 strftimedelta(lap["LapTime"], '%m:%s.%ms'), color="white",fontsize=10, va="center", ha="left")
         else:
             ax.text(
             lap["Gap"]+ 0.01,
@@ -69,12 +69,12 @@ def create_quali_plots(year, event, session_type, drivers):
     ax.xaxis.set_major_formatter(FuncFormatter(percent_formatter))
     ax.set_xlim(0, fastest_laps["GapPercent"].max() + 0.25)
     ax.set_axisbelow(True)
-    ax.grid(axis="x", color="white", linestyle='--', linewidth=1)
+    ax.grid(axis="x", color="yellow",linestyle='--', linewidth=1)
     ax.set_xlabel("Gap to Pole Time (Percentage)", fontsize=12, labelpad=20)
 
 # Naming the plot
     poletime = strftimedelta(pole_lap["LapTime"], '%m:%s.%ms')
-    ax.set_title(f"{event} {year} - Qualifying Results", fontsize=22, pad=30, color="red")
+    ax.set_title(f"{event} {year} - Qualifying Results", fontsize=16, pad=30, color="yellow")
 
 # Now for a similar bar chat but showing the result of Q1, Q2 and Q3
     results = quali.results.copy()
@@ -90,7 +90,7 @@ def create_quali_plots(year, event, session_type, drivers):
         gap_percent = ((data[session + "_sec"] - fastest)/ fastest) * 100
         max_gap_percent = max(max_gap_percent, gap_percent.max())
 #Creating the graph
-    fig1, axes = plt.subplots(figsize=(18, 10),ncols=3,sharey=False)
+    fig1, axes = plt.subplots(figsize=(15, 12),ncols=3,sharey=False)
 # Plotting each qualifying segment.
     for ax, session in zip(axes, sessions):
 
@@ -137,14 +137,14 @@ def create_quali_plots(year, event, session_type, drivers):
 # Formatting the graph and the axises
         ax.set_xlim(0, max_gap_percent + 0.20)
         ax.invert_yaxis()
-        ax.set_title(session,fontsize=18,color="red",pad=18)
+        ax.set_title(session,fontsize=16,color="yellow",pad=18)
         ax.set_xlabel("Gap to Session Best (%)",fontsize=10,labelpad=15)
         ax.xaxis.set_major_formatter(PercentFormatter(decimals=1))
-        ax.grid(axis="x",linestyle="--",linewidth=0.8,color="white")
+        ax.grid(axis="x",linestyle="--",linewidth=0.8,color="yellow")
         ax.set_axisbelow(True)
         axes[0].set_ylabel("Driver", fontsize=11)
 # Giving the plot a title
-    fig1.suptitle(f"{event} {year} - Q1, Q2 & Q3 Results",fontsize=20,color="red",y=0.98)
+    fig1.suptitle(f"{event} {year} - Q1, Q2 & Q3 Results",fontsize=16,color="yellow",y=0.98)
 # Compacting it together
     fig1.tight_layout(rect=[0, 0, 1, 0.96])
 
@@ -162,7 +162,7 @@ def create_quali_plots(year, event, session_type, drivers):
         max_gap_percent_sector= max(max_gap_percent_sector, gap_percent_sector.max())
     sector_data["S3"] = sector_data["Sector3Time"].dt.total_seconds()
 #Creating the graph 
-    fig2, axes = plt.subplots(figsize=(18, 10),ncols=3,sharey=False)
+    fig2, axes = plt.subplots(figsize=(15,12),ncols=3,sharey=False)
     sector_names = [("S1", "Sector 1"), ("S2", "Sector 2"), ("S3", "Sector 3")]
 # Now to set up the graph similar to before
     for ax, (col, title) in zip(axes, sector_names):
@@ -204,14 +204,14 @@ def create_quali_plots(year, event, session_type, drivers):
 # Formatting the graph and the axises
         ax.set_xlim(0, max_gap_percent_sector + 0.20)
         ax.invert_yaxis()
-        ax.set_title(title,fontsize=18,color="red",pad=18)
+        ax.set_title(title,fontsize=16,color="yellow",pad=18)
         ax.set_xlabel("Gap to Fastest Sector (%)",fontsize=10,labelpad=15)
         ax.xaxis.set_major_formatter(PercentFormatter(decimals=1))
-        ax.grid(axis="x",linestyle="--",linewidth=0.8,color="white")
+        ax.grid(axis="x",linestyle="--",linewidth=0.8,color="yellow")
         ax.set_axisbelow(True)
         axes[0].set_ylabel("Driver", fontsize=11)
 # Giving the plot a title
-    fig2.suptitle(f"{event} {year} - Sector Segment Results",fontsize=20,color="red",y=0.98)
+    fig2.suptitle(f"{event} {year} - Sector Segment Results",fontsize=20,color="yellow",y=0.98)
 # Compacting it together
     fig2.tight_layout(rect=[0, 0, 1, 0.96])
 
@@ -246,7 +246,7 @@ def create_quali_plots(year, event, session_type, drivers):
     actual_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in actual_order["Team"]]
     ideal_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in ideal_order["Team"]]
 # Time to plot the graph hahah!
-    fig3,(ax1, ax2) = plt.subplots(1, 2, figsize=(18,10))
+    fig3,(ax1, ax2) = plt.subplots(1, 2, figsize=(12,14))
 # Actual order plot
     bars = ax1.barh(
         actual_order["Driver"],
@@ -279,8 +279,8 @@ def create_quali_plots(year, event, session_type, drivers):
 # Setting up the axies and the titles
     ax1.invert_yaxis()
     ax1.set_xlabel("Gap to Fastest Actual Lap (s)")
-    ax1.set_title("Actual LapTime Order", fontsize= 14, color = "red")
-    ax1.grid(axis="x",linestyle="--",linewidth=0.8,color="white")
+    ax1.set_title("Actual LapTime Order", fontsize= 12, color = "yellow")
+    ax1.grid(axis="x",linestyle="--",linewidth=0.8,color="yellow")
     ax1.set_axisbelow(True)
 # Ideal Order Plot
     bars = ax2.barh(
@@ -309,11 +309,11 @@ def create_quali_plots(year, event, session_type, drivers):
 # Setting up the axies and the titles
     ax2.invert_yaxis()
     ax2.set_xlabel("Gap to Fastest Ideal Lap (s)")
-    ax2.set_title("Ideal LapTime Order", fontsize= 14, color = "red")
-    ax2.grid(axis="x",linestyle="--",linewidth=0.8,color="white")
+    ax2.set_title("Ideal LapTime Order", fontsize= 12, color = "yellow")
+    ax2.grid(axis="x",linestyle="--",linewidth=0.8,color="yellow")
     ax2.set_axisbelow(True)
 # Overall title
-    fig3.suptitle(f"Actual Versus Ideal Laptimes for the {year} {event} Qualifying", fontsize = 20, color = "red")
+    fig3.suptitle(f"Actual Versus Ideal Laptimes for the {year} {event} Qualifying", fontsize = 16, color = "yellow")
 # Now to plot all the graphs!
     plt.tight_layout()
     return fig, fig1, fig2, fig3

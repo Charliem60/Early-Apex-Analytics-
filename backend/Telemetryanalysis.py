@@ -13,7 +13,7 @@ def create_track_visuals(year, event, session_type, drivers):
     race.load()
 
 
-    fig, axes = plt.subplots(2, 2, figsize=(10,10))
+    fig, axes = plt.subplots(2, 2, figsize=(11,7))
     axes = axes.flatten()
 
     for ax, driver in zip(axes, drivers):
@@ -45,20 +45,20 @@ def create_track_visuals(year, event, session_type, drivers):
         ax.axis("off")
         ax.set_anchor("C")
         ax.tick_params(labelleft=False, left=False, labelbottom=False, bottom=False)
-        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="green", fontsize=10)
+        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
 # Adding a colorbar to the plot
     active_axes = axes[:len(drivers)]
     for ax in axes[len(drivers):]:
         ax.set_visible(False)
-
-    cbar = fig.colorbar(lc_comp, ax=axes.tolist(), orientation="horizontal", shrink=0.4, pad=0.04)
+    cbar_ax = fig.add_axes([0.91,0.32,0.018,0.36])
+    cbar = fig.colorbar(lc_comp, cax=cbar_ax)
     cbar.set_label("Gear")
     cbar.set_ticks(np.arange(1.5,9.5))
     cbar.set_ticklabels(np.arange(1,9))
-    title = fig.suptitle(f"Fastest Lap Gear Shift Visualisation in Qualifying", color="red", fontsize=16, y=0.98)
+    title = fig.suptitle(f"Fastest Lap Gear Visualisation in Qualifying", color="yellow", fontsize=16, y=0.98)
 
 # Now for a speed visualization on a track map graph!
-    fig1, axes2 = plt.subplots(2, 2, figsize=(10,10))
+    fig1, axes2 = plt.subplots(2, 2, figsize=(11,7))
     axes2 = axes2.flatten()
 
     for ax, driver in zip(axes2, drivers):
@@ -93,15 +93,17 @@ def create_track_visuals(year, event, session_type, drivers):
         ax.axis("equal")
         ax.axis("off")
         ax.set_anchor("C")
-        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="green", fontsize=10)
+        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
 # Adding a colorbar to the plot
-    active_axes = axes[:len(drivers)]
-    for ax in axes[len(drivers):]:
+    active_axes = axes2[:len(drivers)]
+    for ax in axes2[len(drivers):]:
         ax.set_visible(False)
-    fig1.colorbar(lc, ax=axes2.tolist(), orientation="horizontal", label = "Speed (km/h)", shrink=0.4, pad=0.04)
-    title = fig1.suptitle(f"Fastest Lap Speed Visualisation in Qualifying", color="red", fontsize=16, y=0.98)
-    fig.subplots_adjust(hspace=0.3, wspace=0.3)
-    fig1.subplots_adjust(hspace=0.3, wspace=0.3)
+    cbar_ax = fig1.add_axes([0.91,0.32,0.018,0.36])
+    cbar = fig1.colorbar(lc, cax=cbar_ax)
+    cbar.set_label("Speed")
+    title = fig1.suptitle(f"Fastest Lap Speed Visualisation in Qualifying", color="yellow", fontsize=16, y=0.98)
+    fig.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
+    fig1.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
 
     return fig, fig1 
 
