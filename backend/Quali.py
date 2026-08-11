@@ -11,30 +11,30 @@ from fastf1.core import Laps
 
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
-# Loading the session data and inmputing the race you want to investigate
+# fetching the data from the year, event, session and so on chosen by the user then load the data.
 def create_quali_plots(year, event, session_type, drivers):
     quali = fastf1.get_session(year, event, session_type)
     quali.load()
-# Now we get an array of the drivers.
+# Now we get an array of the drivers for the qualifying sessions and subsequent graphs.
     session_drivers = pd.unique(quali.laps["Driver"])
-# Now to find the fastest laps of the session
+# Now to find the fastest laps of the session and sorting them from fastest to slowest.
     lst_fastest_laps = list()
     for driver in session_drivers:
         drivers_fastest_lap = quali.laps.pick_drivers(driver).pick_fastest()
         if drivers_fastest_lap is not None:
             lst_fastest_laps.append(drivers_fastest_lap)
     fastest_laps = Laps(lst_fastest_laps).sort_values(by="LapTime").reset_index(drop=True)
-# Dealing with the plots.
+# Dealing with the plots. Setting the pole lap and calculating the gaps of all slower drivers to the pole driver to be displayed later. Displaying the percentage time from drivers off pole too.
     pole_lap = fastest_laps.pick_fastest()
     fastest_laps["Gap"]= (fastest_laps["LapTime"] - pole_lap["LapTime"]).dt.total_seconds()
     pole_in_seconds = pole_lap["LapTime"].total_seconds()
     fastest_laps["GapPercent"]= ((fastest_laps["LapTime"].dt.total_seconds() - pole_in_seconds) / pole_in_seconds)* 100
-# Getting the right team colors and names
+# Fetching the team colours for the plots.
     team_colors = list()
     for index, lap in fastest_laps.iterlaps():
         color = fastf1.plotting.get_team_color(lap["Team"], session=quali)
         team_colors.append(color)
-# Plotting the data
+# Plotting the data in a bar chart form and hatching the second driver of each team to differentiate between them.
     fig, ax = plt.subplots(figsize=(11, 7))
     bars = ax.barh(fastest_laps.index, fastest_laps["Gap"], color=team_colors, edgecolor="black")
     seen_teams = set()
@@ -48,7 +48,7 @@ def create_quali_plots(year, event, session_type, drivers):
 # Celebrating the polesitter!
     bars[0].set_edgecolor("purple")
     bars[0].set_linewidth(4)
-# Adding lap time labels
+# Adding lap time labels to the bar chart.
     for i, lap in fastest_laps.iterlaps():
 
         if i == 0:
@@ -71,8 +71,7 @@ def create_quali_plots(year, event, session_type, drivers):
     ax.set_axisbelow(True)
     ax.grid(axis="x", color="yellow",linestyle='--', linewidth=1)
     ax.set_xlabel("Gap to Pole Time (Percentage)", fontsize=12, labelpad=20)
-
-# Naming the plot
+# Naming the plot and displaying the pole time.
     poletime = strftimedelta(pole_lap["LapTime"], '%m:%s.%ms')
     ax.set_title(f"{event} {year} - Qualifying Results", fontsize=16, pad=30, color="yellow")
 
@@ -82,7 +81,7 @@ def create_quali_plots(year, event, session_type, drivers):
     for session in ["Q1", "Q2", "Q3"]:
         results[session + "_sec"] = results[session].dt.total_seconds()
     sessions = ["Q1", "Q2", "Q3"]
-# Calculating the percentage gaps along the x-axsis.
+# Calculating the percentage gaps along the x-axsis from fastest to slowest and fetching the data from the session just as before,
     max_gap_percent = 0
     for session in sessions:
         data = results.dropna(subset=[session + "_sec"]).copy()
@@ -97,7 +96,7 @@ def create_quali_plots(year, event, session_type, drivers):
         data = results.dropna(subset=[session + "_sec"]).copy()
         data = data.sort_values(session + "_sec")
         fastest_time = data[session + "_sec"].min()
-        # Calculating the gaps to and percentages to
+        # Calculating the gaps to and percentages to the fastest driver.
         data["GapSeconds"] = (
             data[session + "_sec"] - fastest_time
     )
@@ -108,7 +107,7 @@ def create_quali_plots(year, event, session_type, drivers):
         colors = [ fastf1.plotting.get_team_color( team, session=quali)for team in data["TeamName"]]
     # Labelling the bars
         bars = ax.barh(data["Abbreviation"],data["GapPercent"],color=colors,edgecolor="black")
-    # Hatch second driver
+    # Hatch second driver just as the first graph
         seen_teams = set()
         for bar, (_, row) in zip(bars, data.iterrows()):
             team = row["TeamName"]
@@ -117,7 +116,7 @@ def create_quali_plots(year, event, session_type, drivers):
     # Celebrating the fastest driver.
         bars[0].set_edgecolor("purple")
         bars[0].set_linewidth(3)
-    # Adding labels
+    # Adding labels and display th percentage gap and the time gap to the fastest driver for each segment.
         for bar, (_, row) in zip(bars, data.iterrows()):
             if row["GapSeconds"] == 0:
                 label = strftimedelta(row[session],"%m:%s.%ms")
@@ -134,7 +133,7 @@ def create_quali_plots(year, event, session_type, drivers):
             color="white"
         )
 
-# Formatting the graph and the axises
+# Formatting the graph and the axises and setting everything to the website ui colours.
         ax.set_xlim(0, max_gap_percent + 0.20)
         ax.invert_yaxis()
         ax.set_title(session,fontsize=16,color="yellow",pad=18)
@@ -150,7 +149,7 @@ def create_quali_plots(year, event, session_type, drivers):
 
 # Graph of all three sectors and the fastest times
     sector_data = fastest_laps.copy()
-# Convering to seconds
+# Convering to seconds for the sector times.
     sector_data["S1"] = sector_data["Sector1Time"].dt.total_seconds()
     sector_data["S2"] = sector_data["Sector2Time"].dt.total_seconds()
     sector_data["S3"] = sector_data["Sector3Time"].dt.total_seconds()
@@ -164,7 +163,7 @@ def create_quali_plots(year, event, session_type, drivers):
 #Creating the graph 
     fig2, axes = plt.subplots(figsize=(15,12),ncols=3,sharey=False)
     sector_names = [("S1", "Sector 1"), ("S2", "Sector 2"), ("S3", "Sector 3")]
-# Now to set up the graph similar to before
+# Now to set up the graph similar to before by creting the gap percent on the x axis and so on.
     for ax, (col, title) in zip(axes, sector_names):
         data = sector_data.sort_values(col).reset_index(drop=True)
         fastest_sector = data[col].min()
@@ -173,11 +172,11 @@ def create_quali_plots(year, event, session_type, drivers):
         data["Gap"] = data[col] - fastest_sector
         data["GapPercent"] = ((data[col] - fastest_sector) / fastest_sector) *100
     
-     # Finding the team colors
+     # Finding the team colors again
         colors = [ fastf1.plotting.get_team_color( team, session=quali)for team in data["Team"]]
     # Labelling the bars
         bars = ax.barh(data["Driver"],data["GapPercent"],color=colors,edgecolor="black")
-    # Hatch second driver
+    # Hatch second driver for easy ui.
         seen_teams = set()
         for bar, (_, row) in zip(bars, data.iterrows()):
             team = row["Team"]
@@ -186,7 +185,7 @@ def create_quali_plots(year, event, session_type, drivers):
     # Celebrating the fastest driver.
         bars[0].set_edgecolor("purple")
         bars[0].set_linewidth(3)
-     # Adding labels
+     # Adding labels such as the gap percentage and the gap to the fastest sector etc.
         for bar, (_, row) in zip(bars, data.iterrows()):
             if row["Gap"]==0:
                 label = f"{row[col]:.3f}s"
@@ -217,24 +216,25 @@ def create_quali_plots(year, event, session_type, drivers):
 
 
 # Actual vs Best possible laptimes for each driver
+# Finding a place to store the ideal laps. Then finding the sector times.
     ideal_laps= []
     for driver in session_drivers:
         laps = quali.laps.pick_drivers(driver)
         laps = laps.dropna(subset=["Sector1Time", "Sector2Time", "Sector3Time"])
         if laps.empty:
             continue
-    # Gettng the fastest laps
+    # Gettng the fastest laps for each driver and the fastest sector times of each driver and adding them.
         fastest_fastest_lap = laps.pick_fastest()
         ideal_time = (laps["Sector1Time"].min() +laps["Sector2Time"].min() +  laps["Sector3Time"].min())
         ideal_laps.append({"Driver": driver, "Team": fastest_fastest_lap["Team"], "Actual": fastest_fastest_lap["LapTime"], "Ideal": ideal_time})
-
+    # Creating the ideal dataframe to store all this information. Create the actual results and the ideal results.
     ideal_df = pd.DataFrame(ideal_laps)
     ideal_df["ActualSec"] = ideal_df["Actual"].dt.total_seconds()
     ideal_df["IdealSec"] = ideal_df["Ideal"].dt.total_seconds()
 # Getting the actual fastest laps
     fastest_actual = ideal_df["ActualSec"].min()
     fastest_ideal = ideal_df["IdealSec"].min()
-# Gap calculations
+# Gap calculations between ideal and actual and so on.
     ideal_df["ActualGap"] = ideal_df["ActualSec"] - fastest_actual
     ideal_df["IdealGap"] = ideal_df["IdealSec"] - fastest_ideal
 # Time on the table
@@ -242,12 +242,12 @@ def create_quali_plots(year, event, session_type, drivers):
 # Sorting the dataframes
     actual_order = ideal_df.sort_values("ActualGap").reset_index(drop=True)
     ideal_order = ideal_df.sort_values("IdealGap").reset_index(drop=True)
-# Colors
+# Colors for each driver.
     actual_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in actual_order["Team"]]
     ideal_colors = [fastf1.plotting.get_team_color(team, session=quali) for team in ideal_order["Team"]]
-# Time to plot the graph hahah!
+# Time to plot the graph as before
     fig3,(ax1, ax2) = plt.subplots(1, 2, figsize=(12,14))
-# Actual order plot
+# Actual order plot for the real qualifying results.
     bars = ax1.barh(
         actual_order["Driver"],
         actual_order["ActualGap"], color = actual_colors, edgecolor = "black")
@@ -261,7 +261,7 @@ def create_quali_plots(year, event, session_type, drivers):
 # Celebrating the fastest driver.
     bars[0].set_edgecolor("purple")
     bars[0].set_linewidth(3)
-# Adding labels
+# Adding labels as before of this first bar chart.
     for bar, (_, row) in zip(bars, actual_order.iterrows()):
         if row["ActualGap"]==0:
             label = strftimedelta(row["Actual"], "%m:%s.%ms")
@@ -282,7 +282,7 @@ def create_quali_plots(year, event, session_type, drivers):
     ax1.set_title("Actual LapTime Order", fontsize= 12, color = "yellow")
     ax1.grid(axis="x",linestyle="--",linewidth=0.8,color="yellow")
     ax1.set_axisbelow(True)
-# Ideal Order Plot
+# Ideal Order Plot. Creating the bar chart for the "perfect" qualifying results
     bars = ax2.barh(
         ideal_order["Driver"],
         ideal_order["IdealGap"], color = ideal_colors, edgecolor = "black")
@@ -299,7 +299,7 @@ def create_quali_plots(year, event, session_type, drivers):
 
     ax2.barh(ideal_order["Driver"], ideal_order["TimeLeft"], left = ideal_order["IdealGap"], color = "gold", hatch = "//", edgecolor = "black" , label = "Gap To Actual Lap")
 
-# Adding labels
+# Adding labels to display the time left on the table and highlighting this in gold.
     for i, row in ideal_order.iterrows():
         ax2.text(
             row["IdealGap"] + row["TimeLeft"] + 0.01,
@@ -314,6 +314,6 @@ def create_quali_plots(year, event, session_type, drivers):
     ax2.set_axisbelow(True)
 # Overall title
     fig3.suptitle(f"Actual Versus Ideal Laptimes for the {year} {event} Qualifying", fontsize = 16, color = "yellow")
-# Now to plot all the graphs!
+# Now to display this on the site.
     plt.tight_layout()
     return fig, fig1, fig2, fig3

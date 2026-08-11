@@ -8,45 +8,41 @@ import matplotlib as mpl
 
 # Enables patches for plotting time values and loads dark colour theme.
 fastf1.plotting.setup_mpl(mpl_timeddelta_support=True, color_scheme='fastf1')
+# Fetching the information that the users has given. Loading the session and the axes.
 def create_track_visuals(year, event, session_type, drivers):
     race = fastf1.get_session(year, event, session_type)
     race.load()
-
-
     fig, axes = plt.subplots(2, 2, figsize=(11,7))
     axes = axes.flatten()
-
+    # Loading all the information, finding the fastest laps and converting the lap times, fetching the telemetry and ensuring that it doesn't crash.
     for ax, driver in zip(axes, drivers):
         laps = race.laps.pick_drivers(driver).pick_fastest()
         if laps is None:
             print(f"No Data for {driver}")
             continue
-
         lap_time = laps["LapTime"]
         mins = int(lap_time.total_seconds()//60)
         secs = lap_time.total_seconds()%60
         lap_time = f"{mins}:{secs:06.3f}"
         tel = laps.get_telemetry()
-    # Prepare the data for plotting by converting to numpy
+    # Prepare the data for plotting by converting to numpy to link the telemetry of the laps. Showing the gear on the plot, and creating the various of segments across the track.
         x = tel["X"].to_numpy()
         y = tel["Y"].to_numpy()
         points = np.array([x,y]).T.reshape(-1,1,2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
         gear = tel["nGear"].to_numpy().astype(float)
-        # Merging the colormap
+        # Merging the colormap of all the gear labels and colours. Then creating the plot and linking all the information to it.
         cmap = colormaps["Paired"]
         lc_comp = LineCollection(segments, norm=plt.Normalize(1, 8), cmap=cmap)
         lc_comp.set_array(gear)
         lc_comp.set_linewidth(4)
-
         ax.add_collection(lc_comp)
-
         ax.axis("equal")
         ax.axis("off")
         ax.set_anchor("C")
         ax.tick_params(labelleft=False, left=False, labelbottom=False, bottom=False)
         ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
-# Adding a colorbar to the plot
+# Adding a colorbar to the plot and setting a title to the figure and setting everything in the app style.
     active_axes = axes[:len(drivers)]
     for ax in axes[len(drivers):]:
         ax.set_visible(False)
@@ -60,26 +56,25 @@ def create_track_visuals(year, event, session_type, drivers):
 # Now for a speed visualization on a track map graph!
     fig1, axes2 = plt.subplots(2, 2, figsize=(11,7))
     axes2 = axes2.flatten()
-
+    # Same as before, picking the fastest laps of each inputed drivers and making sure it doesn't break.
     for ax, driver in zip(axes2, drivers):
         laps = race.laps.pick_drivers(driver).pick_fastest()
         if laps is None:
             print(f"No Data for {driver}")
             continue
-
+        # Same as the above plot, getting the lap times and converting them so it can be easily displayed. Fetch the telemetry.
         lap_time = laps["LapTime"]
         mins = int(lap_time.total_seconds()//60)
         secs = lap_time.total_seconds()%60
         lap_time = f"{mins}:{secs:06.3f}"
         tel = laps.get_telemetry()
-    # Prepare the data for plotting by converting to numpy
+    # Prepare the data for plotting by converting to numpy as before but this time for the speed graph.
         x = tel["X"].to_numpy()
         y = tel["Y"].to_numpy()
         color = tel['Speed'].to_numpy()
         points = np.array([x,y]).T.reshape(-1,1,2)
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
-        gear = tel["nGear"].to_numpy().astype(float)
-    # Merging the colormap
+    # Merging the colormap and setting the similar lines of the track and so on up again.
         colormap = mpl.cm.plasma
         track_outline = LineCollection(segments, colors="black", linewidth=10, linestyle="--")
         track_outline.set_capstyle("round")
@@ -89,12 +84,12 @@ def create_track_visuals(year, event, session_type, drivers):
         lc.set_array(color)
         outline = ax.add_collection(track_outline)
         line = ax.add_collection(lc)
-    # Creating the color bar
+    # Creating the color bar and turning the x axis off and ensuring that the graph isn't that messy.
         ax.axis("equal")
         ax.axis("off")
         ax.set_anchor("C")
         ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
-# Adding a colorbar to the plot
+# Adding a colorbar to the plot to make it all stand out. Then creating the title, arranging the legend to the side of the bars to make sure nothing overlaps.
     active_axes = axes2[:len(drivers)]
     for ax in axes2[len(drivers):]:
         ax.set_visible(False)
@@ -104,7 +99,7 @@ def create_track_visuals(year, event, session_type, drivers):
     title = fig1.suptitle(f"Fastest Lap Speed Visualisation in Qualifying", color="yellow", fontsize=16, y=0.98)
     fig.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
     fig1.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
-
+    # Returning the graphs
     return fig, fig1 
 
 

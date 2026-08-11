@@ -7,6 +7,7 @@ cache_app = "cache"
 if not os.path.exists(cache_app):
     os.makedirs(cache_app)
 fastf1.Cache.enable_cache(cache_app)  # Enable caching for FastF1 data
+# Connecting the backend to the frontend and importing everything.
 from backend.fastf1data import get_races, get_drivers, get_sessions
 from backend.Driveranalysis import create_driver_lap_data
 from backend.Quali import create_quali_plots
@@ -16,17 +17,15 @@ from backend.Telemetryanalysis import create_track_visuals
 from backend.Telemetrydashboard import create_tele_dashboard
 from backend.TrackMap import create_track_map
 from backend.Weather import create_weather_dashboard
-# -----------------------------------
-# Page configuration
-# -----------------------------------
+
+# Setting up the configuration of the streamlit app.
+
 st.set_page_config(
     page_title="Early Apex Analytics",
     page_icon="🏎️",
     layout="wide"
 )
-
-# Custom Yellow + Black Theme CSS
-# 
+# Building a yellow and partly black css for the website.
 st.markdown("""
 <style>
 
@@ -44,10 +43,6 @@ p, label {
     background: white !important;
     color: black !important;
 }
-
-
-
-
 div[data-baseweb="select"] > div {
     background: white !important;
     border-radius: 10px !important;
@@ -57,7 +52,6 @@ div[data-baseweb="select"] > div {
 div[data-baseweb="select"] span {
     color: black !important;
 }
-
 
 .stButton button {
     background: black !important;
@@ -128,7 +122,7 @@ div[data-baseweb="tag"] span {
 
 </style>
 """, unsafe_allow_html=True)
-
+# Setting up the tabs to move between the different pages of analysis.
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
     [
         "🏠 Home Page",
@@ -141,7 +135,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
         "📊 Telemetry Dashboard"
     ]
 )
-
+# Setting up tab one, the home page, the title, the headers, explaining what the app can do and so on.
 with tab1:
     st.title("🏎️ Early Apex Analytics")
 
@@ -200,12 +194,13 @@ with tab1:
 ################################
 with tab2:
     st.header("Qualifying Analysis")
+    # Choosing the race and the year and so on.
     st.write("Use this section to analyze qualifying sessions for a selected race, such as ideal vs actual lap times, sector performance, and more. Pick and Choose a season and race using the inputs below.")
     quali_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="quali_year")
     quali_races= get_races(quali_year)
     quali_race = st.selectbox("Race", quali_races, key="quali_race")
     quali_drivers = get_drivers(quali_year, quali_race,"Q")
-    #Generating
+    #Generating the plots
     if st.button("Generate Qualifying Analysis", key="quali_analysis_button"):
         with st.spinner("Generating qualifying analysis..."):
             quali_fig, quali_fig1, quali_fig2, quali_fig3 = create_quali_plots(
@@ -214,7 +209,7 @@ with tab2:
             "Q",
             quali_drivers
             )
-
+        # Displaying the plots
         st.pyplot(quali_fig)
         st.write("The two following charts show the complete results across the session and the sector times for each driver in the qualifying session.")
         st.pyplot(quali_fig1)
@@ -227,10 +222,12 @@ with tab2:
     #######################################
 with tab6:
     st.header("Weather Dashboard")
+    #Choosing the race and the year and so on.
     st.write("Use this section to analyze weather conditions for a selected race and session, including temperature, humidity, wind speed, and more to understand their impact on a given session.")
     weather_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="weather_year")
     weather_race = st.selectbox("Race", get_races(weather_year), key="weather_race")
     weather_session = st.selectbox("Session", get_sessions(weather_year, weather_race), key="weather_session")
+    # Gemerating and displaying it.
     if st.button("Generate Weather Dashboard"):
         with st.spinner("Generating weather dashboard..."):
             weather_fig = create_weather_dashboard(weather_year,weather_race,weather_session)
@@ -240,10 +237,12 @@ with tab6:
 #######################################
 with tab3:
     st.header("Race Charts and Analysis")
+    #Choosing the race and the year and so on.
     st.write("Use this section to analyze a race including position changes, strategy, and other key metrics.")
     race_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="race_year")
     race_race = st.selectbox("Race", get_races(race_year), key="race_race")
     race_session = "R"
+    # Gemerating and displaying all the plots and giving information on them.
     if st.button("Generate Race Charts", key="race_charts_button"):
         with st.spinner("Generating race charts..."):
             race_fig1, race_fig2, race_fig3, race_fig4 = create_race_traces(race_year, race_race, race_session)
@@ -259,6 +258,7 @@ with tab3:
 ######################################
 with tab4:
     st.header("Driver Charts and Analysis")
+    #Choosing the race and the year and so on.
     st.write("Use this section to compare drivers over the course of race stints and other metrics. You can select multiple drivers to compare their performance during any session. Investigate their lap times over the course of a session on a lap-by-lap basis, and compare their performance against each other.")
     driver_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="driver_year")
     driver_race = st.selectbox("Race", get_races(driver_year), key="driver_race")
@@ -266,6 +266,7 @@ with tab4:
     driver_drivers = get_drivers(driver_year, driver_race, driver_session)
     selected_driver_drivers = st.multiselect("Select drivers", driver_drivers, key="selected_driver_drivers")   
     if st.button("Generate Charts", key="driver_charts_button"):
+    # Generating and displaying all the plots and giving information on them.
         with st.spinner("Generating driver charts..."):
             driver_fig1, driver_fig2 = create_driver_lap_data(driver_year, driver_race, driver_session, selected_driver_drivers)
         st.pyplot(driver_fig1)
@@ -275,12 +276,14 @@ with tab4:
 ######################################
 with tab5:
     st.header("Telemetry Graphics")
+    #Choosing the race and the year and so on.
     st.write("Use this section to visualize telemetry data for any selected drivers in a session of your choice. Please pick four drivers!")
     telemetry_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="telemetry_year")
     telemetry_race = st.selectbox("Race", get_races(telemetry_year), key="telemetry_race")
     telemetry_session = st.selectbox("Session", get_sessions(telemetry_year, telemetry_race), key="telemetry_session")
     telemetry_drivers = get_drivers(telemetry_year, telemetry_race, telemetry_session)
     selected_telemetry_drivers = st.multiselect("Select drivers", telemetry_drivers, key="selected_telemetry_drivers")   
+    # Generating and displaying all the plots and giving information on them.
     if st.button("Generate Charts", key="telemetry_charts_button"):
         with st.spinner("Generating telemetry charts..."):
             telemetry_fig1, telemetry_fig2 = create_track_visuals(telemetry_year, telemetry_race, telemetry_session, selected_telemetry_drivers)
@@ -320,4 +323,4 @@ with tab8:
           st.write("In the above dashboard you can investigate differing gear changes, identify differing battery deployment rates, where drivers are braking, and find out where time is won and lost." \
           "In the track map below, it plots the fastest laps of your selected drivers in the given session, and shows who is quicker and where.")
           st.pyplot(map_track_fig)
-
+# That is everything sorted as far as the website looks and connecting all the data and so on.
