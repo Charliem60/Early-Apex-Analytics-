@@ -29,6 +29,7 @@ Using the select boxes, pick whatever season you want to investigate followed by
 Once that is complete, and the session has loaded you will see a variety of displayed graphs. Scroll down to see each of the graphs, followed by brief explanations of what they show. As seen in the example below, if the graph doesn't fit in your screen, press the window icon at the top right corner of the graph to blow it up. It can be easier to view graphs and plots that way.
 
 <img width="800" height="383" alt="navigation gif" src="https://github.com/user-attachments/assets/b79ed525-8b5b-484b-a19c-e4a753e90c26" />
+
 In other tabs such as Telemetry Analysis or Weather, you will have to input a session for more options. In the example below, the user is investigating the traces of the top three of the Hungarian Grand Prix qualifying session. The dashboard seen below can also be viewed by itself when pressing the window icon in the top right corner. Use your curser to hover over the traces to view further information. 
 <img width="800" height="362" alt="telem2" src="https://github.com/user-attachments/assets/6607d4c3-46b0-4b2e-a303-9aceed74821d" />
 
