@@ -6,8 +6,8 @@ Project objectives such as the ability to analyse race and qualifying data, weat
 
 
 ## Installation
-- Download the latest release [here]
-- using cmd and pip, go to the directory of this repository and run the following command. This has to be run to install the packages needed: `pip install -r requirements.txt`
+- Download the latest release [here](https://github.com/Charliem60/Early-Apex-Analytics-/releases/tag/1.0.0)
+- Unzip the file. Then using cmd and pip, go to the directory of this repository and run the following command. This has to be run to install the packages needed: `pip install -r requirements.txt`
 - Run `streamlit app.py` to start the streamlit app
 - The streamlit app will open onto the homepage with a brief explanation about the application.
 - Other useful information:
