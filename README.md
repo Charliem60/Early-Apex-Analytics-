@@ -12,7 +12,7 @@ Project objectives such as the ability to analyse race and qualifying data, weat
 - The streamlit app will open onto the homepage with a brief explanation about the application.
 - Other useful information:
   - Each time you want to launch the application run `streamlit app.py`.
-  - This application used a cache system. Find all this date in the cache folder and clear it should you wish. You can also do this on the site itself.
+  - This application uses a cache system. You can find all this data in the cache folder and clear it should you wish. You can also do this on the site itself.
   - Works with python v3.14
   - Yes, the site is that yellow.
 
