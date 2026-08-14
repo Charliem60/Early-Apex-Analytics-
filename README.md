@@ -8,10 +8,10 @@ Project objectives such as the ability to analyse race and qualifying data, weat
 ## Installation
 - Download the latest release [here](https://github.com/Charliem60/Early-Apex-Analytics-/releases/tag/1.0.0)
 - Unzip the file. Then using cmd and pip, go to the directory of this repository and run the following command. This has to be run to install the packages needed: `pip install -r requirements.txt`
-- Run `streamlit app.py` to start the streamlit app
+- Run `streamlit run app.py` to start the streamlit app
 - The streamlit app will open onto the homepage with a brief explanation about the application.
 - Other useful information:
-  - Each time you want to launch the application run `streamlit app.py`.
+  - Each time you want to launch the application run `streamlit run app.py`.
   - This application uses a cache system. You can find all this data in the cache folder and clear it should you wish. You can also do this on the site itself.
   - Works with python v3.14
   - Yes, the site is that yellow.
