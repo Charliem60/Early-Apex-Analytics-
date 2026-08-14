@@ -3,7 +3,7 @@ import fastf1
 # Cacheing the data so Streamlit doesn't have to reload it over and over and over and over again.
 @st.cache_data(show_spinner=False)
 def get_races(year):
-    schedule = fastf1.get_event_schedule(year)
+    schedule = fastf1.get_event_schedule(year, include_testing=False)
     return schedule["EventName"].dropna().tolist()
 
 # Caching the driver data to stop loading the same session over and over.
@@ -40,7 +40,7 @@ def get_sessions(year, event):
     Return only the sessions that exist for the selected event.
     """
     # Loading the schedule, finding the race and creating an empty list to store the sessions.
-    schedule = fastf1.get_event_schedule(year)
+    schedule = fastf1.get_event_schedule(year, include_testing=False)
     race = schedule[schedule["EventName"] == event].iloc[0]
     sessions = []
     # Check the session slots.
