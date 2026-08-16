@@ -60,6 +60,7 @@ Explore braking, throttle and speed traces between different cars over a lap.
 A dashboard for understanding weather conditions during any given session.
 
 -🏆 Championship:
+
 Examine past season standings and trends
 
 ## Future updates
