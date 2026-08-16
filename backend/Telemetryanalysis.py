@@ -41,7 +41,7 @@ def create_track_visuals(year, event, session_type, drivers):
         ax.axis("off")
         ax.set_anchor("C")
         ax.tick_params(labelleft=False, left=False, labelbottom=False, bottom=False)
-        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
+        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="#4BA3C3", fontsize=10)
 # Adding a colorbar to the plot and setting a title to the figure and setting everything in the app style.
     active_axes = axes[:len(drivers)]
     for ax in axes[len(drivers):]:
@@ -51,7 +51,7 @@ def create_track_visuals(year, event, session_type, drivers):
     cbar.set_label("Gear")
     cbar.set_ticks(np.arange(1.5,9.5))
     cbar.set_ticklabels(np.arange(1,9))
-    title = fig.suptitle(f"Fastest Lap Gear Visualisation in Qualifying", color="yellow", fontsize=16, y=0.98)
+    title = fig.suptitle(f"Fastest Lap Gear Visualisation", color="#D62839", fontsize=16, y=0.98)
 
 # Now for a speed visualization on a track map graph!
     fig1, axes2 = plt.subplots(2, 2, figsize=(11,7))
@@ -88,7 +88,7 @@ def create_track_visuals(year, event, session_type, drivers):
         ax.axis("equal")
         ax.axis("off")
         ax.set_anchor("C")
-        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="yellow", fontsize=10)
+        ax.set_title(f"{laps['Driver']} - {lap_time} - {year} {race.event['EventName']}", color="#4BA3C3", fontsize=10)
 # Adding a colorbar to the plot to make it all stand out. Then creating the title, arranging the legend to the side of the bars to make sure nothing overlaps.
     active_axes = axes2[:len(drivers)]
     for ax in axes2[len(drivers):]:
@@ -96,7 +96,7 @@ def create_track_visuals(year, event, session_type, drivers):
     cbar_ax = fig1.add_axes([0.91,0.32,0.018,0.36])
     cbar = fig1.colorbar(lc, cax=cbar_ax)
     cbar.set_label("Speed")
-    title = fig1.suptitle(f"Fastest Lap Speed Visualisation in Qualifying", color="yellow", fontsize=16, y=0.98)
+    title = fig1.suptitle(f"Fastest Lap Speed Visualisation", color="#D62839", fontsize=16, y=0.98)
     fig.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
     fig1.subplots_adjust(hspace=0.3, wspace=0.3, bottom=0.15)
     # Returning the graphs

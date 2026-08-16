@@ -33,11 +33,11 @@ def create_race_traces(year, event, session_type, drivers=None):
     ax.set_yticks(range(1,23))
     ax.set_xlabel("Lap")
     ax.set_ylabel("Position")
-    ax.set_title(f"{event} {year} - Race Position Changes", fontsize=22, pad=30, color="yellow")
+    ax.set_title(f"{event} {year} - Race Position Changes", fontsize=22, pad=30, color="#D62839")
 # Add legend of all the drivers participating in the race.
     ax.legend(bbox_to_anchor=(1.02,1), loc="upper left", title="Drivers", fontsize=10,ncol=1)
     plt.tight_layout()
-    plt.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
+    plt.grid(linewidth = 0.5, color = "#4BA3C3", alpha = 0.5, linestyle="--")
 
 # Now a tyre stragedy plot. Getting all the stints and the information from fastf1 about the data throughout the race. Grouping the stints and the infromation.
     race_drivers = [race.get_driver(driver)["Abbreviation"] for driver in race.drivers]
@@ -125,7 +125,7 @@ def create_race_traces(year, event, session_type, drivers=None):
     )
 ]
 # Now giving the title, setting up the general style of the plot and making the plot more readable.
-    fig1.suptitle(f"{event} {year} - Race Strategies", fontsize=20, y=0.96, fontweight="bold", color = "yellow")
+    fig1.suptitle(f"{event} {year} - Race Strategies", fontsize=20, y=0.96, fontweight="bold", color = "#D62839")
     ax1.legend(handles=legend_elements, title="Tyre Compounds", loc="upper center", bbox_to_anchor=(0.5, 1.04), ncol=7, frameon=False)
     ax1.invert_yaxis()
     ax1.set_xlabel("Lap Number")
@@ -135,7 +135,7 @@ def create_race_traces(year, event, session_type, drivers=None):
     ax1.set_xlim(0, race.total_laps)
     ax1.xaxis.set_major_locator(MultipleLocator(10))
     ax1.xaxis.set_minor_locator(MultipleLocator(1))
-    plt.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
+    plt.grid(linewidth = 0.5, color = "#4BA3C3", alpha = 0.5, linestyle="--")
 
 
 # Now for a pace comparison between every different team to see which teams were quicker in the race. Copying the race laps from before.
@@ -158,17 +158,17 @@ def create_race_traces(year, event, session_type, drivers=None):
     order = team_order,
     hue = "Team",
     palette = teams_colors,
-    whiskerprops=dict(color="yellow"),
+    whiskerprops=dict(color="#4BA3C3"),
     boxprops=dict(edgecolor = "black"),
-    medianprops=dict(color="yellow"),
-    capprops=dict(color = "yellow"),
+    medianprops=dict(color="#4BA3C3"),
+    capprops=dict(color = "#4BA3C3"),
     showfliers=False
     )
 # Setting axises and titles and so on.
-    ax2.set_title(f"{event} {year} - Team Race Pace Distribution", fontsize=22, pad=30, color="yellow")
+    ax2.set_title(f"{event} {year} - Team Race Pace Distribution", fontsize=22, pad=30, color="#D62839")
     ax2.set(xlabel=None)
     ax2.set_ylabel("Lap Times (seconds)")
-    plt.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
+    plt.grid(linewidth = 0.5, color = "#4BA3C3", alpha = 0.5, linestyle="--")
 
 # Now for a plot that shows the gap to the race leader from all cars across the course of the race
     race_winner = race.results.iloc[0]["Abbreviation"]
@@ -188,10 +188,10 @@ def create_race_traces(year, event, session_type, drivers=None):
         style = fastf1.plotting.get_driver_style(abb,session=race, style=["color", "linestyle"])
         ax3.plot(drive["LapNumber"], drive["Gap"], linewidth=2, label=abb, **style)
 
-    ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "yellow")
+    ax3.set_title(f"Race Gaps to leader during the {year} {event}", color = "#D62839")
     ax3.set_xlabel("Lap")
     ax3.set_ylabel("Gap (s)")
-    ax3.grid(linewidth = 0.5, color = "yellow", alpha = 0.5, linestyle="--")
+    ax3.grid(linewidth = 0.5, color = "#4BA3C3", alpha = 0.5, linestyle="--")
     ax3.legend(bbox_to_anchor=(1.02,1), loc="upper left")
 
     # Returning all the four plots to display them onto the app.

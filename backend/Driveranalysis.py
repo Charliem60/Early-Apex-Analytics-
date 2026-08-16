@@ -36,10 +36,10 @@ def create_driver_lap_data(year, event, session_type, drivers):
 
 # Set up the colours of the graph and its titles using the general theme of the app
     fig1, ax1 = plt.subplots(figsize=(11, 7))
-    ax1.tick_params(colors='yellow')  
-    ax1.xaxis.label.set_color('yellow')
-    ax1.yaxis.label.set_color('yellow')
-    ax1.set_title(f"Lap times of selected drivers during the {year} {event}", color="yellow")
+    ax1.tick_params(colors='#4BA3C3')  
+    ax1.xaxis.label.set_color('#4BA3C3')
+    ax1.yaxis.label.set_color('#4BA3C3')
+    ax1.set_title(f"Lap times of selected drivers during the {year} {event}", color="#D62839")
 
 # Getting the selected drivers laps and style for the plot
     for driver in driver_list:
@@ -83,10 +83,10 @@ def create_driver_lap_data(year, event, session_type, drivers):
             pass
 # Next we set up the scatterplot figure styling it like before
     fig2, ax2 = plt.subplots(figsize = (8, 6))
-    ax2.tick_params(colors = "yellow")
-    ax2.xaxis.label.set_color("yellow")
-    ax2.yaxis.label.set_color("yellow")
-    ax2.set_title(f"Scatterplot of lap times during the {year} {event}", color ="yellow")
+    ax2.tick_params(colors = "#4BA3C3")
+    ax2.xaxis.label.set_color("#4BA3C3")
+    ax2.yaxis.label.set_color("#4BA3C3")
+    ax2.set_title(f"Scatterplot of lap times during the {year} {event}", color ="#D62839")
     sns.scatterplot(data=driver_laps,
                     x= "LapNumber",
                     y = "LapTime",

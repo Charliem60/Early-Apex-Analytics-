@@ -69,11 +69,11 @@ def create_track_map(year, event, session_type, drivers):
     circuit = race.get_circuit_info()
     corners = circuit.corners
     for _, corner in corners.iterrows():
-        ax.text(corner["X"], corner["Y"], str(corner["Number"]), color="yellow", fontsize=8, weight="bold", ha="center", va="center")
+        ax.text(corner["X"], corner["Y"], str(corner["Number"]), color="#4BA3C3", fontsize=8, weight="bold", ha="center", va="center")
 # Formating everything, giving it a title and displaying it
     ax.axis("equal")
     ax.axis("off")
     ax.legend(handles=legend_elements, loc="upper left")
-    plt.title(f"{year} {event} {session_type} Fastest Lap Track Domination Comparison Plot", color="yellow", fontsize=16, fontweight="bold")
+    plt.title(f"{year} {event} {session_type} Fastest Lap Track Domination Comparison Plot", color="#D62839", fontsize=16, fontweight="bold")
     plt.tight_layout()
     return fig

@@ -116,7 +116,7 @@ def create_championship_plots(SEASON):
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
     fig.update_layout(
-        font=dict(color="yellow")
+        font=dict(color="#4BA3C3")
     )
     #Store the completed graph
     fig2=fig
@@ -216,7 +216,7 @@ def create_championship_plots(SEASON):
     champion = len(heatmap_data.index)-1
     fig.add_shape(type="rect", x0=-0.5, x1 = len(short_race_names)-0.5, y0=champion-0.5, y1=champion+0.5, line=dict(color="gold", width=4), fillcolor="rgba(0,0,0,0)")
     fig.update_layout(
-        font=dict(color="yellow")
+        font=dict(color="#4BA3C3")
     )
     fig3 = fig
     #Displaying the charts on the app

@@ -1,12 +1,21 @@
 import os
 import streamlit as st
 import fastf1
-# Create FastF1 cache
+import base64
+from pathlib import Path
+# Setting up the config of the streamlit page
+st.set_page_config(
+    page_title="Early Apex Analytics",
+    layout="wide"
+)
+
+# Creating FastF1 cache
 cache_app = "cache"
 
 if not os.path.exists(cache_app):
     os.makedirs(cache_app)
 fastf1.Cache.enable_cache(cache_app)  # Enable caching for FastF1 data
+
 # Connecting the backend to the frontend and importing everything.
 from backend.fastf1data import get_races, get_drivers, get_sessions
 from backend.Driveranalysis import create_driver_lap_data
@@ -19,106 +28,343 @@ from backend.TrackMap import create_track_map
 from backend.Weather import create_weather_dashboard
 
 # Setting up the configuration of the streamlit app.
+# Load background image for the app. This image is by Felix Berger on the free image use website Unsplash. A thanks for the use of that photo for the background of the site.
+image_path = Path("assets/background_image.jpg")
 
-st.set_page_config(
-    page_title="Early Apex Analytics",
-    page_icon="🏎️",
-    layout="wide"
-)
-# Building a yellow and partly black css for the website.
-st.markdown("""
+if image_path.exists():
+    image_base64 = base64.b64encode(
+        image_path.read_bytes()
+    ).decode()
+else:
+    image_base64 = ""
+
+# Now we are building a custom css for the website. I have randomly chosen a variety of colours that are the branding colours of the site.
+# They are Crimson  #D62839  Rosewood  #BA324F  Baltic Blue   #175676  Surf Blue  #4BA3C3   and finally Pale Sky  #CCE6F4
+
+st.markdown(f"""
 <style>
 
-[data-testid="stAppViewContainer"],
-[data-testid="stHeader"] {
-    background: #FFF4B8 !important;
-}
+/* the main background for the css with the added image  */
 
-h1, h2, h3, h4, h5, h6,
-p, label {
-    color: #000000 !important;
-}
+[data-testid="stAppViewContainer"] {{
+    background:
+        linear-gradient(
+            rgba(5, 15, 27, 0.72),
+            rgba(5, 15, 27, 0.82)
+        ),
+        url("data:image/jpeg;base64,{image_base64}");
 
-[data-testid="stNumberInput"] input {
-    background: white !important;
-    color: black !important;
-}
-div[data-baseweb="select"] > div {
-    background: white !important;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+}}
+
+/* making it sort of clear */
+
+[data-testid="stAppViewContainer"] > .main {{
+    background: transparent !important;
+}}
+
+
+/* giving the site a header and formatting that to blend in and fixing the navigation. */
+
+[data-testid="stHeader"] {{
+    background: rgba(9, 24, 39, 0.30) !important;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.08) !important;
+}}
+
+[data-testid="stToolbar"] {{
+    background: transparent !important;
+}}
+
+
+/* Now for the main content of the site, this includes formatting the headings, sidebars, the content containers to fuzzy the background image and the select boxes for the graphs and plots */
+
+.block-container {{
+    padding-top: 2rem !important;
+    padding-bottom: 4rem !important;
+
+    max-width: 1400px !important;
+}}
+
+h1, h2, h3, h4, h5, h6 {{
+    color: #FFFFFF !important;
+
+    font-weight: 800 !important;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.65);
+}}
+
+
+h1 {{
+    font-size: 2.7rem !important;
+    letter-spacing: -0.5px;
+}}
+
+
+h2 {{
+    font-size: 2rem !important;
+}}
+
+
+h3 {{
+    font-size: 1.5rem !important;
+}}
+
+
+p {{
+    color: #FFFFFF !important;
+}}
+
+
+label {{
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}}
+
+
+[data-testid="stSidebar"] {{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(23, 86, 118, 0.96),
+            rgba(9, 24, 39, 0.96)
+        ) !important;
+
+    border-right:
+        2px solid rgba(75, 163, 195, 0.55) !important;
+
+    box-shadow:
+        5px 0 25px rgba(0, 0, 0, 0.25);
+}}
+
+
+[data-testid="stSidebar"] * {{
+    color: #FFFFFF !important;
+}}
+
+
+[data-testid="stSidebar"] a {{
+    color: #FFFFFF !important;
+}}
+
+[data-testid="stVerticalBlockBorderWrapper"] {{
+    background: rgba(9, 24, 39, 0.60) !important;
+
+    border: 1px solid rgba(75, 163, 195, 0.30) !important;
+
+    border-radius: 16px !important;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.25);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}}
+
+div[data-baseweb="select"] > div {{
+    background:
+        rgba(23, 86, 118, 0.96) !important;
+
+    border:
+        2px solid #4BA3C3 !important;
+
     border-radius: 10px !important;
-    border: 2px solid black !important;
-}
 
-div[data-baseweb="select"] span {
-    color: black !important;
-}
+    min-height: 42px !important;
+}}
 
-.stButton button {
-    background: black !important;
+
+div[data-baseweb="select"] span {{
+    color: #FFFFFF !important;
+}}
+
+
+div[data-baseweb="select"] svg {{
+    fill: #FFFFFF !important;
+}}
+
+
+div[data-baseweb="select"] input {{
+    color: #FFFFFF !important;
+}}
+
+
+/* Dropdown for the input clickers */
+
+div[role="listbox"] {{
+    background:
+        #175676 !important;
+
+    border:
+        2px solid #4BA3C3 !important;
+
     border-radius: 10px !important;
-    border: 2px solid black !important;
-    padding: 0.6rem 1.5rem !important;
-}
 
-.stButton button p {
-    color: #FFD700 !important;
-    font-weight: bold !important;
-}
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.35);
+}}
 
 
-[data-testid="metric-container"] {
-    background: white !important;
-    border: 2px solid black !important;
-    border-radius: 12px !important;
-}
+div[role="option"] {{
+    background: #175676 !important;
+
+    color: #FFFFFF !important;
+}}
 
 
-div[data-baseweb="select"] > div {
-    background-color: #000000 !important;
-    border: 2px solid #000000 !important;
-    border-radius: 10px !important;
-}
+div[role="option"]:hover {{
+    background: #4BA3C3 !important;
 
-/* Selected text */
-div[data-baseweb="select"] span {
-    color: #FFD700 !important;
-}
+    color: #FFFFFF !important;
+}}
 
-/* Dropdown arrow */
-div[data-baseweb="select"] svg {
-    fill: #FFD700 !important;
-}
 
-/* Dropdown menu */
-div[role="listbox"] {
-    background-color: #000000 !important;
-}
+/* Continuining with multi select tags, colouring them with the branding colours of the app. */
 
-/* Dropdown options */
-div[role="option"] {
-    background-color: #000000 !important;
-    color: #FFD700 !important;
-}
+div[data-baseweb="tag"] {{
+    background:
+        #4BA3C3 !important;
 
-/* Hover option */
-div[role="option"]:hover {
-    background-color: #FFD700 !important;
-    color: #000000 !important;
-}
+    border:
+        1px solid #175676 !important;
 
-div[data-baseweb="select"] input {
-    color: #FFD700 !important;
-}
+    border-radius: 6px !important;
+}}
 
-/* Selected driver tags */
-div[data-baseweb="tag"] {
-    background-color: #FFD700 !important;
-    color: #000000 !important;
-}
 
-div[data-baseweb="tag"] span {
-    color: #000000 !important;
-}
+div[data-baseweb="tag"] span {{
+    color: #FFFFFF !important;
+}}
+
+/* Formatting the buttons, and giving them colours of the sites branding same as before. */
+
+.stButton button {{
+    background:
+        linear-gradient(
+            135deg,
+            #D62839,
+            #BA324F
+        ) !important;
+
+    color:
+        #FFFFFF !important;
+
+    border:
+        2px solid #D62839 !important;
+
+    border-radius:
+        10px !important;
+
+    padding:
+        0.65rem 1.5rem !important;
+
+    font-weight:
+        800 !important;
+
+    box-shadow:
+        0 6px 18px rgba(214, 40, 57, 0.38);
+
+    transition:
+        all 0.2s ease !important;
+}}
+
+
+.stButton button p {{
+    color:
+        #FFFFFF !important;
+
+    font-weight:
+        800 !important;
+}}
+
+
+.stButton button:hover {{
+    background:
+        linear-gradient(
+            135deg,
+            #BA324F,
+            #D62839
+        ) !important;
+
+    border-color:
+        #BA324F !important;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(214, 40, 57, 0.50);
+}}
+
+button[kind="secondary"] {{
+    background:
+        rgba(23, 86, 118, 0.95) !important;
+
+    border:
+        2px solid #4BA3C3 !important;
+
+    color:
+        #FFFFFF !important;
+}}
+
+
+button[kind="secondary"] p {{
+    color:
+        #FFFFFF !important;
+}}
+
+/* Formatting the home page so that the deviders and the info text blends into the ui design */
+
+[data-testid="stAlert"] {{
+    border-radius:
+        12px !important;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.18);
+}}
+
+hr {{
+    border-color:
+        rgba(204, 230, 244, 0.35) !important;
+
+    opacity:
+        0.7 !important;
+}}
+
+
+/* This makes sure that it looks good on a phone. Not in use right now, but this section is purely here for future updates. */
+
+@media (max-width: 768px) {{
+
+    h1 {{
+        font-size:
+            2rem !important;
+    }}
+
+    h2 {{
+        font-size:
+            1.5rem !important;
+    }}
+
+    .block-container {{
+        padding-top:
+            1rem !important;
+
+        padding-left:
+            1rem !important;
+
+        padding-right:
+            1rem !important;
+
+    }}
+    
+
+}}
+
 
 </style>
 """, unsafe_allow_html=True)
@@ -137,14 +383,14 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
 )
 # Setting up tab one, the home page, the title, the headers, explaining what the app can do and so on.
 with tab1:
-    st.title("🏎️ Early Apex Analytics")
+    st.title("Early Apex Analytics")
 
     st.subheader(
       "Welcome to Early Apex Analytics!"
     )
 
     st.markdown("""
-    This is a web app that with the help of FastF1 API data, allows you to explore F1 data from 2018 to present. The types of data you can explore is explained below.
+    Explore Formula One data from 2018 to present from qualifying graphs, race plots, telemetry and weather dashboards and much more.
     <br>
 
     ⚠️ 
@@ -162,25 +408,25 @@ with tab1:
 
     with col1:
         st.markdown("""
-        **⏱ Qualifying Analysis**  
+        **Qualifying Analysis**  
         Compare lap times, sectors and ideal vs actual laps.
 
-        **🏁 Race Analysis**  
+        **Race Analysis**  
         Examine pace between teammates, rivals, race strategies and position changes.
 
-        **👤 Driver Analysis**  
+        **Driver Analysis**  
         Compare driver session plans, runs and laptimes during a session.
         """)
 
     with col2:
         st.markdown("""
-        **📡 Telemetry**  
+        **Telemetry**  
         Explore braking, throttle and speed traces between different cars over a lap.
 
-        **🌦 Weather**  
+        **Weather**  
         A dashboard for understanding weather conditions during any given session.
 
-        **🏆 Championship**  
+        **Championship**  
         Examine past season standings and trends.
         """)
 
@@ -195,7 +441,7 @@ with tab1:
 with tab2:
     st.header("Qualifying Analysis")
     # Choosing the race and the year and so on.
-    st.write("Use this section to analyze qualifying sessions for a selected race, such as ideal vs actual lap times, sector performance, and more. Pick and Choose a season and race using the inputs below.")
+    st.write("Use this section to analyze qualifying sessions for a selected race, such as ideal vs actual lap times, sector performance, and more. Pick and choose a season and race using the inputs below.")
     quali_year = st.selectbox("Season", list(range(2018, 2027)), index=8, key="quali_year")
     quali_races= get_races(quali_year)
     quali_race = st.selectbox("Race", quali_races, key="quali_race")

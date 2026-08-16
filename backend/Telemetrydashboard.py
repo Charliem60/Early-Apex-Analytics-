@@ -76,8 +76,8 @@ def create_tele_dashboard(year,event,session_type, drivers):
                             showarrow=False,
                               font=dict(size=8))
     # Setting up the ui, the title and so on.
-    fig.update_layout(template="plotly_dark", height=1300, hovermode="x unified", title =dict(text=f"{year} {event} {session_names.get(session_type, session_type)}<br>Fastest Lap Telemetry Comparison Plot", font=dict(size=22, color="yellow")))
-    fig.update_annotations(font=dict(size=10, color="yellow"))
+    fig.update_layout(template="plotly_dark", height=1300, hovermode="x unified", title =dict(text=f"{year} {event} {session_names.get(session_type, session_type)}<br>Fastest Lap Telemetry Comparison Plot", font=dict(size=22, color="#D62839")))
+    fig.update_annotations(font=dict(size=10, color="#4BA3C3"))
     # Returning the dashboard.
     return fig
 
